@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="math\Angles.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="math\cpuid.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Decompose.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\DrawVert.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Heap.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="math\IDLIB.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\JointTransform.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Math.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Matrix.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Plane.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Quat.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Rotation.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Simd.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Simd_3DNow.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Simd_Generic.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Simd_MMX.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Simd_SSE.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Simd_SSE2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Simd_SSE3.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Str.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Vector.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="math\Angles.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="containers\BTree.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="math\cpuid.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Decompose.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="dMathHeader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\DrawVert.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Heap.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="math\IDLIB.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\JointTransform.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Math.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="math\matrix.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Plane.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Quat.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Random.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Rotation.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Simd.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Simd_3DNow.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Simd_Generic.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Simd_MMX.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Simd_SSE.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Simd_SSE2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Simd_SSE3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Str.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Vector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+</Project>

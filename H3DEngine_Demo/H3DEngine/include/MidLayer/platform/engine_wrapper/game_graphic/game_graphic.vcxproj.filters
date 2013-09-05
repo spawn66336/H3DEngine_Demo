@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="helper">
+      <UniqueIdentifier>{0d03ef8c-39bc-4670-ba3c-1a7755638c78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{16d317bc-814d-43a8-9a76-c8d54de367a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{7ac5c012-ca95-47e1-90a8-215ef371659b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{6639e9ee-07c3-4d7b-9407-d51f80f357e3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="bezier.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="equation.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="error_code.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="function_parameter.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="3DEntity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="actor.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="actor_control.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="actor_manager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="avatar_skeleton_model_entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="avatarentity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="camera_entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="direction_prepass_light_entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="effect_entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="entity_factory.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics_res_mng.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="i_actor_control.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="i_media_entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="i_move_entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="level_entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="lightmap_adjust_entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="media_end_entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="media_end_entity_type.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="model_entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="point_prepass_light_entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="prepass_light_entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="property_modifier.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="property_modifier_creator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="render_system.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="skeleton_model_entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="system_entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="system_info.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="target_position.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="wimble_prepass_light_entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="game_graphic_body.h" />
+    <ClInclude Include="game_graphic_header.h" />
+    <ClInclude Include="game_graphic_interface.h" />
+    <ClInclude Include="extend_entity_creator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="extend_media_end_entity_type.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="extend_property_type.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="property_type.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="entity_appearance.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\interact_ray.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\interact_obb.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\interact_plane.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\H3DColor.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\data_struct.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="operation.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="scene_entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="equation.cpp">
+      <Filter>helper</Filter>
+    </ClCompile>
+    <ClCompile Include="function_parameter.cpp">
+      <Filter>helper</Filter>
+    </ClCompile>
+    <ClCompile Include="3DEntity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="actor.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="actor_control.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="actor_manager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="avatar_skeleton_model_entity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="avatarentity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="camera_entity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="direction_prepass_light_entity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="effect_entity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="entity_factory.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics_res_mng.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="level_entity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="lightmap_adjust_entity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="media_end_entity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="model_entity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="point_prepass_light_entity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="prepass_light_entity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="property_modifier.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="property_modifier_creator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="render_system.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="skeleton_model_entity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="system_entity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="system_info.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="target_position.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="wimble_prepass_light_entity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\interact_obb.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\H3DColor.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\interact_plane.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="operation.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="scene_entity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

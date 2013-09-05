@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="binxml">
+      <UniqueIdentifier>{89541e5a-1d18-4dba-a46c-1b2f3d2389c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tinyxml">
+      <UniqueIdentifier>{04751c5a-9f45-47ac-89f1-52309a721406}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\binxml\bin_xml.cpp">
+      <Filter>binxml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\binxml\bin_xml_converter.cpp">
+      <Filter>binxml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tinyxml\tinystr.cpp">
+      <Filter>tinyxml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tinyxml\tinyxml.cpp">
+      <Filter>tinyxml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tinyxml\tinyxmlerror.cpp">
+      <Filter>tinyxml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tinyxml\tinyxmlparser.cpp">
+      <Filter>tinyxml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IXMLNode.cpp" />
+    <ClCompile Include="..\tinyutil.cpp" />
+    <ClCompile Include="..\tinyxmlhelper.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\binxml\bin_xml.h">
+      <Filter>binxml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\binxml\bin_xml_converter.h">
+      <Filter>binxml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tinyxml\tinystr.h">
+      <Filter>tinyxml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tinyxml\tinyxml.h">
+      <Filter>tinyxml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IXMLNode.h" />
+    <ClInclude Include="..\MemAllocator.h" />
+    <ClInclude Include="..\tinyutil.h" />
+    <ClInclude Include="..\tinyxmlhelper.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+</Project>

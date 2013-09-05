@@ -1,0 +1,11 @@
+1 在DLL初始化时,调用VFS::Init()
+2 在DLL注销之前,调用VFS::ShutdownVFS()
+3 所有XML直接使用TINYXML
+4 所有2进制文件使用VFS::Hfopen()代替fopen(),sPakName 参数为0
+5 所有2进制文件使用VFS::Hfclose()代替fclose(),sPakName 参数为0
+6 所有2进制文件读取使用VFS::Hfread()
+7 Hfseek,Hfeof,Hftell ,Hfgets 可以随便使用
+8 没有fscanf函数
+9 PAK以2进制模式打开，如果文本文件不大，建议将文本文件一次性读入一个buf。然后使用scanf,gets
+10 在某个目录里查找第一个文件： VFS::Ifile* FindFileInDir( 目录名字, 小写的文件后缀名(可以为0）,0);
+11 在某个目录里查找所有相同类型的文件 VFS::IFile* FindNextFileInDir(上一个找到的ifile文件, 小写后缀名字（可以为0）). 注意！ 一旦使用了FindNextFileInDir()，当作此函数参数的Ifile立即失效，无法再做它用！

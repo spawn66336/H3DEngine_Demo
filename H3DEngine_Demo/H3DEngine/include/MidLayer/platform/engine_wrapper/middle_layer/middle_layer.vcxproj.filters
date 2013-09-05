@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="animation_script.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="dynamic_effect_object.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="edit_info_table.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="middle_layer_log.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="property_helper.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="stage.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="stage_animation_clip_mng.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="stage_animation_player.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="stage_post_processor.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="animation_script.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="dynamic_effect_object.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="edit_info_table.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="i_middle_layer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="middle_layer_log.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="property_helper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stage.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stage_animation_clip_mng.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stage_animation_player.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stage_post_processor.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="middle_layer_body.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="middle_layer_header.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="middle_layer_interface.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+</Project>
