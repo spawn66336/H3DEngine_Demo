@@ -21,6 +21,8 @@
 
 #include "H3DEngine_DemoDoc.h"
 #include "H3DEngine_DemoView.h"
+#include "ZPDependency.h"
+#include "H3DEngineBox.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -38,13 +40,17 @@ BEGIN_MESSAGE_MAP(CH3DEngine_DemoView, CView)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CH3DEngine_DemoView::OnFilePrintPreview)
 	ON_WM_CONTEXTMENU()
 	ON_WM_RBUTTONUP()
+	ON_WM_CREATE()
+	ON_WM_DESTROY()
+	ON_WM_SIZE()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 // CH3DEngine_DemoView 构造/析构
 
-CH3DEngine_DemoView::CH3DEngine_DemoView()
-{
-	// TODO: 在此处添加构造代码
+CH3DEngine_DemoView::CH3DEngine_DemoView(): 
+m_pH3DBox(NULL)
+{ 
 
 }
 
@@ -84,19 +90,16 @@ void CH3DEngine_DemoView::OnFilePrintPreview()
 }
 
 BOOL CH3DEngine_DemoView::OnPreparePrinting(CPrintInfo* pInfo)
-{
-	// 默认准备
+{ 
 	return DoPreparePrinting(pInfo);
 }
 
 void CH3DEngine_DemoView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
-{
-	// TODO: 添加额外的打印前进行的初始化过程
+{ 
 }
 
 void CH3DEngine_DemoView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
-{
-	// TODO: 添加打印后进行的清理过程
+{ 
 }
 
 void CH3DEngine_DemoView::OnRButtonUp(UINT /* nFlags */, CPoint point)
@@ -134,4 +137,43 @@ CH3DEngine_DemoDoc* CH3DEngine_DemoView::GetDocument() const // 非调试版本是内联
 #endif //_DEBUG
 
 
-// CH3DEngine_DemoView 消息处理程序
+// CH3DEngine_DemoView 消息处理程序 
+int CH3DEngine_DemoView::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (CView::OnCreate(lpCreateStruct) == -1)
+		return -1;
+
+	//创建引擎容器
+	m_pH3DBox = new ZPH3D::H3DEngineBox;
+	ZP_ASSERT( NULL != m_pH3DBox );
+	m_pH3DBox->Init( this->GetSafeHwnd() ); 
+	return 0;
+}
+
+
+void CH3DEngine_DemoView::OnDestroy()
+{
+	CView::OnDestroy(); 
+	//销毁引擎容器
+	m_pH3DBox->Destroy();
+	 ZP_SAFE_DELETE( m_pH3DBox );
+}
+
+
+void CH3DEngine_DemoView::OnSize(UINT nType, int cx, int cy)
+{
+	CView::OnSize(nType, cx, cy);
+	m_pH3DBox->Resize();
+}
+
+
+void CH3DEngine_DemoView::OnPaint()
+{
+	CPaintDC dc(this);   
+	this->RenderOneFrame();
+}
+
+void CH3DEngine_DemoView::RenderOneFrame( void )
+{
+	m_pH3DBox->RenderOneFrame();
+}

@@ -224,3 +224,10 @@ void CH3DEngine_DemoApp::SaveCustomState()
 
 
 
+
+
+BOOL CH3DEngine_DemoApp::OnIdle(LONG lCount)
+{ 
+	( (CH3DEngine_DemoView*)( ((CMainFrame*)AfxGetMainWnd())->GetActiveView() ) )->RenderOneFrame();
+	 return TRUE;
+}
