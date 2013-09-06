@@ -3,15 +3,15 @@
 namespace ZPH3D
 {
 
-	const H3DVec3 H3DFPSCamera::CAM_INIT_DIR( 0.0f , 0.0f , 1.0f );
-	const H3DVec3 H3DFPSCamera::CAM_INIT_RIGHT( 1.0f , 0.0f , 0.0f ); 
-	const H3DVec3 H3DFPSCamera::CAM_INIT_UP( 0.0f , 1.0f , 0.0f ); 
-	const H3DVec3 H3DFPSCamera::CAM_INIT_POS( 0.0f , 0.0f , -10.0f ); 
+	//const H3DVec3 H3DFPSCamera::CAM_INIT_DIR( 0.0f , 0.0f , 1.0f );
+	//const H3DVec3 H3DFPSCamera::CAM_INIT_RIGHT( 1.0f , 0.0f , 0.0f ); 
+	//const H3DVec3 H3DFPSCamera::CAM_INIT_UP( 0.0f , 1.0f , 0.0f ); 
+	//const H3DVec3 H3DFPSCamera::CAM_INIT_POS( 0.0f , 0.0f , -10.0f ); 
 
-	/*const H3DVec3 H3DFPSCamera::CAM_INIT_DIR( 0.0f , 0.0f , 1.0f );
+	const H3DVec3 H3DFPSCamera::CAM_INIT_DIR( 0.0f , 1.0f , 0.0f );
 	const H3DVec3 H3DFPSCamera::CAM_INIT_RIGHT( 1.0f , 0.0f , 0.0f ); 
-	const H3DVec3 H3DFPSCamera::CAM_INIT_UP( 0.0f , 1.0f , 0.0f ); 
-	const H3DVec3 H3DFPSCamera::CAM_INIT_POS( 0.0f , 0.0f , 0.0f ); */
+	const H3DVec3 H3DFPSCamera::CAM_INIT_UP( 0.0f , 0.0f , 1.0f ); 
+	const H3DVec3 H3DFPSCamera::CAM_INIT_POS( 0.0f , -10.0f , 0.0f ); 
 
 
 	H3DFPSCamera::H3DFPSCamera(void)
@@ -22,6 +22,8 @@ namespace ZPH3D
 		m_v3Right = CAM_INIT_RIGHT;
 		m_v3Pos = CAM_INIT_POS;
 		m_fSpeed = 10.0f;
+
+		
 	}
 
 
@@ -107,6 +109,12 @@ namespace ZPH3D
 	{
 		pRenderer->LookAt( m_v3Pos , m_v3Pos+m_v3Dir , m_v3Up );
 		pRenderer->UpdateCamera();
+	}
+
+	void H3DFPSCamera::Apply( H3DI::IScene* pScene )
+	{ 
+		pScene->LookAt( m_v3Pos , m_v3Pos+m_v3Dir , m_v3Up );
+		pScene->UpdateCamera();
 	}
 
 

@@ -150,18 +150,6 @@
     <ClInclude Include="PropertiesWnd.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ZPDependency.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ZPPlatform.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ZPPredefine.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ZPStdDependency.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="H3DEngine_Demo.cpp">

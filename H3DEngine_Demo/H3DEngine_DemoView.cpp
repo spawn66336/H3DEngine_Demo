@@ -43,12 +43,16 @@ BEGIN_MESSAGE_MAP(CH3DEngine_DemoView, CView)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
 	ON_WM_PAINT()
+	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 // CH3DEngine_DemoView ¹¹Ôì/Îö¹¹
 
 CH3DEngine_DemoView::CH3DEngine_DemoView(): 
-m_pH3DBox(NULL)
+m_pH3DBox(NULL),
+m_bDragFlag(FALSE)
 { 
 
 }
@@ -175,4 +179,36 @@ void CH3DEngine_DemoView::OnPaint()
 void CH3DEngine_DemoView::RenderOneFrame( void )
 {
 	m_pH3DBox->RenderOneFrame();
+}
+
+
+void CH3DEngine_DemoView::OnLButtonDown(UINT nFlags, CPoint point)
+{ 
+
+	m_bDragFlag = TRUE;
+	m_mousePoint = point;
+	CView::OnLButtonDown(nFlags, point);
+}
+
+
+void CH3DEngine_DemoView::OnLButtonUp(UINT nFlags, CPoint point)
+{ 
+	m_bDragFlag = FALSE;
+	CView::OnLButtonUp(nFlags, point);
+}
+
+
+void CH3DEngine_DemoView::OnMouseMove(UINT nFlags, CPoint point)
+{ 
+	if( TRUE ==  m_bDragFlag )
+	{
+		int dx = point.x - m_mousePoint.x;
+		int dy = point.y - m_mousePoint.y;
+		m_mousePoint = point;
+
+		m_pH3DBox->RotateCameraWithUpAxis( static_cast<float>(dx) * 0.1f );
+		m_pH3DBox->RotateCameraWithRightAxis( static_cast<float>(dy) * 0.1f );
+
+	}
+	CView::OnMouseMove(nFlags, point);
 }

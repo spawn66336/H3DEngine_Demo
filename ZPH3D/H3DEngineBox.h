@@ -30,6 +30,9 @@ namespace  ZPH3D
 		*/
 		void InitResources( void );
 
+		/**
+		* @brief 销毁资源
+		*/
 		void DestroyResources( void );
 
 		/**
@@ -52,6 +55,10 @@ namespace  ZPH3D
 		*/
 		void Destroy(void);
 
+		void RotateCameraWithUpAxis( const float thetaInRad );
+
+		void RotateCameraWithRightAxis( const float thetaInRad );
+
 	protected:
 
 		void _FrameBegin( void );
@@ -73,7 +80,8 @@ namespace  ZPH3D
 		ISpecialEffectManager* m_pSpecEffectMgr; //特效管理器
 
 		H3DFPSCamera*	m_pCamera;						//当前相机
-		H3DI::IScene*		m_pScene;						//场景对象
+		H3DI::ILevel*			m_pLevel;							//场景对象
+		H3DI::IActor*		m_pActor;							//角色
 
 		unsigned int m_uiLastTick;							//上一帧起始时的时间计数
 		unsigned int m_uiElapseTick;							//从上一帧到本帧流失的时间

@@ -42,6 +42,7 @@ namespace ZPH3D
 		void MoveAlongRightVec( const unsigned int elapseMS , const bool inv = false );
 
 		void Apply( H3DI::IRender* pRenderer );
+		void Apply( H3DI::IScene* pScene );
 
 	protected:
 	

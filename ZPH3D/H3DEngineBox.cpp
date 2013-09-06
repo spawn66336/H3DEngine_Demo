@@ -20,7 +20,8 @@ m_pfCreateRenderPtr(NULL),
 m_pfDeleteRenderPtr(NULL),
 m_pfCreateIProxyFactoryPtr(NULL),
 m_pCamera(NULL),
-m_pScene(NULL),
+m_pLevel(NULL),
+m_pActor(NULL),
 m_uiLastTick(0),
 m_uiElapseTick(0)
 {
@@ -52,9 +53,12 @@ void H3DEngineBox::Init( const HWND hWnd )
 	//创建渲染器
 	m_pH3DRenderer = m_pfCreateRenderPtr();
 	ZP_ASSERT( NULL != m_pH3DRenderer);
+	 
 	
 	//获得核心版本信息
 	String strCoreVersionInfo = m_pH3DRenderer->GetCoreVersionInfo();
+
+	m_hWnd = hWnd;
 
 	RECT wndRect;
 	::GetClientRect( m_hWnd , &wndRect );
@@ -63,7 +67,7 @@ void H3DEngineBox::Init( const HWND hWnd )
 
 	H3DI::tWindowCreateInfoImp wndCreateInfo;
 	m_pH3DRenderer->GetCurrentWindowSetting(wndCreateInfo);
-	wndCreateInfo.hWnd =hWnd;
+	wndCreateInfo.hWnd =hWnd; 
 
 	char strCurrDirectory[256]={0};
 	GetCurrentDirectoryA( 256 , strCurrDirectory );
@@ -81,6 +85,7 @@ void H3DEngineBox::Init( const HWND hWnd )
   
 	float fColor[4]={0.0f,0.0f,0.0f,0.0f};
 	m_pH3DRenderer->SetClearColor(fColor);
+	m_pH3DRenderer->SetClearFlags( H3DI::CLEAR_BUF_COLOR|H3DI::CLEAR_BUF_DEPTH );
 
 	//创建特效管理器
 	m_pSpecEffectMgr=m_pH3DRenderer->CreateEffectManager();
@@ -92,6 +97,7 @@ void H3DEngineBox::Init( const HWND hWnd )
 
 	m_pCamera = new H3DFPSCamera;
 
+	this->InitResources();
 }
 
 void H3DEngineBox::Resize( void )
@@ -111,19 +117,28 @@ void H3DEngineBox::Resize( void )
 		m_iHeight = 1;
 	}
 
+	float fFov = 60.0f;
+	float fNear = 2.0f;
+	float fFar = 1000.0f;
 	//计算宽高比
 	float fRatio = static_cast<float>( m_iWidth ) / static_cast<float>( m_iHeight );
 
-	m_pH3DRenderer->SetFrustum( 60.0f , fRatio , 2.0f , 1000.0f );
+	if( NULL != m_pLevel )
+	{
+		m_pLevel->SetFrustum( fFov , fRatio , fNear , fFar  );
+	}
 
 	if( NULL !=  m_pH3DRenderer )
-	{
+	{ 
+		m_pH3DRenderer->SetFrustum( fFov , fRatio , fNear , fFar );
 		m_pH3DRenderer->ResizeWindowForEditor( m_iWidth , m_iHeight );
 	}
 }
 
 void H3DEngineBox::Destroy( void )
 {
+	this->DestroyResources();
+
 	//删除摄像机
 	delete m_pCamera;
 	m_pCamera = NULL;
@@ -145,21 +160,33 @@ void H3DEngineBox::Destroy( void )
 
 void H3DEngineBox::RenderOneFrame( void )
 {
+	if( NULL == m_pH3DRenderer )
+		return;
+	 
 	//更新流失时间
 	this->_FrameBegin();
-
-	m_pH3DRenderer->FrameBegin();
-
+	 
 	//应用相机
 	this->_SetupCamera();
 
+	m_pH3DRenderer->FrameBegin();
+	m_pH3DRenderer->ClearScreen(); 
+	 
+	m_pH3DRenderer->UpdateCpuSkin();
+	m_pH3DRenderer->ForceSyncData();
+	m_pH3DRenderer->UpdatePhx(m_uiElapseTick); 
+
+	m_pLevel->Update( static_cast<float>(m_uiElapseTick) * 0.001f ); 
+	m_pH3DRenderer->PushScene( m_pLevel ); 
+	 
 	m_pH3DRenderer->Render();
 
 	//绘制基准网格
 	this->_DrawHelpGrid();
 
-	m_pH3DRenderer->FrameEnd();
+	m_pH3DRenderer->FrameEnd();  
 	m_pH3DRenderer->SwapBuffer();
+	 
 
 	this->_FrameEnd();
 } 
@@ -199,10 +226,23 @@ void H3DEngineBox::_SetupCamera( void )
 	if( ::GetKeyState('D') & 0x80 ||
 		::GetKeyState('d') & 0x80 )
 	{
-		m_pCamera->MoveAlongRightVec( m_uiElapseTick  );
+		m_pCamera->MoveAlongRightVec( m_uiElapseTick , false  );
+	}
+
+	if( ::GetKeyState('Q') & 0x80 ||
+		::GetKeyState('q') & 0x80 )
+	{
+		m_pCamera->RotateWithDir( -0.1f );
+	}
+
+	if( ::GetKeyState('E') & 0x80 ||
+		::GetKeyState('e') & 0x80 )
+	{
+		m_pCamera->RotateWithDir( 0.1f );
 	}
 
 	m_pCamera->Apply( m_pH3DRenderer );
+	m_pCamera->Apply( m_pLevel );
 }
 
 
@@ -236,15 +276,51 @@ void H3DEngineBox::_DrawHelpGrid( void )
 
 void H3DEngineBox::InitResources( void )
 {
-	H3DI::sCreateOp createOp;
-	createOp.geo_lod = 0;
-	createOp.mat_lod = 0;
-	/*m_pH3DRenderer->CreateModel( "..\\" , );*/
+	String strActorName = "ac2";
+	H3DI::sCreateOp createOp; 
+	createOp.mat_lod = 0; 
+	m_pH3DRenderer->OpenActionLib( "../resources/art/role/actions/role.xml" );
+	m_pLevel = m_pH3DRenderer->CreateLevel( "Level0" );
+
+	m_pActor = 
+		(H3DI::IActor*)m_pH3DRenderer->CreateActor( 
+		createOp , strActorName.c_str() , false , H3DI::ACTION_UPDATE_PH );
+	  
+	m_pActor->SetBodyPart("../resources/art/role/bodypart/female/trousers/116006001/116006001.BPT");
+	m_pActor->SetBodyPart("../resources/art/role/bodypart/female/shoe/118005001/118005001.BPT");
+
+	m_pActor->Update( 0 );
+
+	m_pLevel->AttachModel( (H3DI::IModel*)m_pActor , H3DI::SL_Actors );
+
+	
+
+	m_pLevel->RestructScene();
+	 
 }
 
 void H3DEngineBox::DestroyResources( void )
 {
+	
+	if( m_pActor )
+	{
+		m_pLevel->DetachModel( (H3DI::IModel*)m_pActor );
+		m_pActor->Release();
+		m_pActor = NULL;
+	}
 
+	m_pLevel->Release();
+	m_pLevel = NULL;
+}
+
+void H3DEngineBox::RotateCameraWithUpAxis( const float thetaInRad )
+{
+	m_pCamera->RotateWithUp( thetaInRad );
+}
+
+void H3DEngineBox::RotateCameraWithRightAxis( const float thetaInRad )
+{
+	m_pCamera->RotateWithRight( thetaInRad );
 }
 
 }//namespace ZPH3D

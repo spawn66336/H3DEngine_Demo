@@ -51,6 +51,8 @@ public:
 protected: 
 
 	ZPH3D::H3DEngineBox* m_pH3DBox;  //引擎容器
+	BOOL m_bDragFlag;
+	CPoint m_mousePoint;
 
 public:
 
@@ -69,6 +71,9 @@ public:
 	afx_msg void OnDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnPaint();
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };
 
 #ifndef _DEBUG  // H3DEngine_DemoView.cpp 中的调试版本
