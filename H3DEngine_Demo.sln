@@ -2,6 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "H3DEngine_Demo", "H3DEngine_Demo\H3DEngine_Demo.vcxproj", "{93F64155-AAF5-4D9D-8CDB-062A069E5C75}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2F1913EC-FE26-407B-A1F6-5E427B483C77} = {2F1913EC-FE26-407B-A1F6-5E427B483C77}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZPH3D", "ZPH3D\ZPH3D.vcxproj", "{2F1913EC-FE26-407B-A1F6-5E427B483C77}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +18,10 @@ Global
 		{93F64155-AAF5-4D9D-8CDB-062A069E5C75}.Debug|Win32.Build.0 = Debug|Win32
 		{93F64155-AAF5-4D9D-8CDB-062A069E5C75}.Release|Win32.ActiveCfg = Release|Win32
 		{93F64155-AAF5-4D9D-8CDB-062A069E5C75}.Release|Win32.Build.0 = Release|Win32
+		{2F1913EC-FE26-407B-A1F6-5E427B483C77}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2F1913EC-FE26-407B-A1F6-5E427B483C77}.Debug|Win32.Build.0 = Debug|Win32
+		{2F1913EC-FE26-407B-A1F6-5E427B483C77}.Release|Win32.ActiveCfg = Release|Win32
+		{2F1913EC-FE26-407B-A1F6-5E427B483C77}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

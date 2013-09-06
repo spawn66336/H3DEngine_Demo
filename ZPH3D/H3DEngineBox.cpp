@@ -1,6 +1,7 @@
-#include "StdAfx.h"
-#include "ZPDependency.h"
+
 #include "H3DEngineBox.h"
+#include "dMathHeader.h"
+#include "H3DFPSCamera.h"
 
 
 namespace ZPH3D
@@ -17,8 +18,13 @@ m_pProxyFactory(NULL),
 m_pSpecEffectMgr(NULL),
 m_pfCreateRenderPtr(NULL),
 m_pfDeleteRenderPtr(NULL),
-m_pfCreateIProxyFactoryPtr(NULL)
+m_pfCreateIProxyFactoryPtr(NULL),
+m_pCamera(NULL),
+m_pScene(NULL),
+m_uiLastTick(0),
+m_uiElapseTick(0)
 {
+	m_uiLastTick = ::GetTickCount();
 }
 
 
@@ -84,6 +90,8 @@ void H3DEngineBox::Init( const HWND hWnd )
 	m_pProxyFactory = m_pfCreateIProxyFactoryPtr();
 	ZP_ASSERT( NULL != m_pProxyFactory );
 
+	m_pCamera = new H3DFPSCamera;
+
 }
 
 void H3DEngineBox::Resize( void )
@@ -116,6 +124,10 @@ void H3DEngineBox::Resize( void )
 
 void H3DEngineBox::Destroy( void )
 {
+	//删除摄像机
+	delete m_pCamera;
+	m_pCamera = NULL;
+
 	ZP_ASSERT( NULL != m_pfDeleteRenderPtr );
 	m_pfDeleteRenderPtr();
 	m_pH3DRenderer = NULL;
@@ -133,13 +145,106 @@ void H3DEngineBox::Destroy( void )
 
 void H3DEngineBox::RenderOneFrame( void )
 {
+	//更新流失时间
+	this->_FrameBegin();
+
 	m_pH3DRenderer->FrameBegin();
-	
+
+	//应用相机
+	this->_SetupCamera();
+
 	m_pH3DRenderer->Render();
 
+	//绘制基准网格
+	this->_DrawHelpGrid();
+
 	m_pH3DRenderer->FrameEnd();
-	 
 	m_pH3DRenderer->SwapBuffer();
+
+	this->_FrameEnd();
 } 
 
+void H3DEngineBox::_FrameBegin( void )
+{
+	unsigned int uiCurrTick = ::GetTickCount();
+	m_uiElapseTick = uiCurrTick - m_uiLastTick;
+	m_uiLastTick = uiCurrTick; 
 }
+
+void H3DEngineBox::_FrameEnd( void )
+{ 
+}
+
+
+void H3DEngineBox::_SetupCamera( void )
+{ 
+	if( ::GetKeyState('W') & 0x80 ||
+		::GetKeyState('w') & 0x80 )
+	{
+		 m_pCamera->MoveAlongDirVec( m_uiElapseTick );
+	}
+
+	if( ::GetKeyState('S') & 0x80 ||
+		::GetKeyState('s') & 0x80 )
+	{
+		m_pCamera->MoveAlongDirVec( m_uiElapseTick , true );
+	}
+
+	if( ::GetKeyState('A') & 0x80 ||
+		::GetKeyState('a') & 0x80 )
+	{
+		m_pCamera->MoveAlongRightVec( m_uiElapseTick , true );
+	}
+
+	if( ::GetKeyState('D') & 0x80 ||
+		::GetKeyState('d') & 0x80 )
+	{
+		m_pCamera->MoveAlongRightVec( m_uiElapseTick  );
+	}
+
+	m_pCamera->Apply( m_pH3DRenderer );
+}
+
+
+void H3DEngineBox::_DrawHelpGrid( void )
+{
+	H3DVec3 b(0,0,0),x(100,0,0),y(0,100,0),z(0,0,100);
+	float c[4] = {1,0,0,0};
+	c[0] = 1;c[1] = c[2] = 1;
+
+	for (float  i=-5.f;i<5.f;i+=0.5f)
+	{
+		b[0] = i;b[1] = -5;b[2] = 0;
+		x[0] = i;x[1] = 5;x[2] = 0;
+		y[0] = -5;y[1] = i;y[2] = 0;
+		z[0]=  5;z[1] = i;z[2] = 0;
+		m_pH3DRenderer->DrawSegment(b, x, c, 1);
+		m_pH3DRenderer->DrawSegment(y, z, c, 1);
+	}
+
+	c[0] = 1;c[1] =c[2] = 0;
+	b[0] = b[1] = b[2] = 0;
+	x[0] = 100;x[1] = x[2] = 0;
+	y[0] = 0;y[1] = 100;y[2] = 0;
+	z[0] = 0;z[1] = 0;z[2] = 100;
+	m_pH3DRenderer->DrawSegment(b, x, c, 5);
+	c[0]=0;c[1]=1;
+	m_pH3DRenderer->DrawSegment(b, y, c, 5);
+	c[2]=1;c[1]=0;
+	m_pH3DRenderer->DrawSegment(b, z, c, 5);
+}
+
+void H3DEngineBox::InitResources( void )
+{
+	H3DI::sCreateOp createOp;
+	createOp.geo_lod = 0;
+	createOp.mat_lod = 0;
+	/*m_pH3DRenderer->CreateModel( "..\\" , );*/
+}
+
+void H3DEngineBox::DestroyResources( void )
+{
+
+}
+
+}//namespace ZPH3D

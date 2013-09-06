@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="头文件\ZPH3D">
-      <UniqueIdentifier>{3af6eca8-7b4e-4050-a209-df9c39c5fd6b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\ZPH3D">
-      <UniqueIdentifier>{2bdf5ddc-afb5-49f3-8c61-6096d902b6c9}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -168,9 +162,6 @@
     <ClInclude Include="ZPStdDependency.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="H3DEngineBox.h">
-      <Filter>头文件\ZPH3D</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="H3DEngine_Demo.cpp">
@@ -202,9 +193,6 @@
     </ClCompile>
     <ClCompile Include="PropertiesWnd.cpp">
       <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="H3DEngineBox.cpp">
-      <Filter>源文件\ZPH3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

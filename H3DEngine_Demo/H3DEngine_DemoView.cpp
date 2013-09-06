@@ -20,8 +20,7 @@
 #endif
 
 #include "H3DEngine_DemoDoc.h"
-#include "H3DEngine_DemoView.h"
-#include "ZPDependency.h"
+#include "H3DEngine_DemoView.h" 
 #include "H3DEngineBox.h"
 
 #ifdef _DEBUG
@@ -75,7 +74,7 @@ void CH3DEngine_DemoView::OnDraw(CDC* /*pDC*/)
 	if (!pDoc)
 		return;
 
-	// TODO: 在此处为本机数据添加绘制代码
+	this->RenderOneFrame();
 }
 
 

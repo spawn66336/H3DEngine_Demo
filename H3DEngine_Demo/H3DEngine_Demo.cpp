@@ -221,11 +221,7 @@ void CH3DEngine_DemoApp::SaveCustomState()
 }
 
 // CH3DEngine_DemoApp 消息处理程序
-
-
-
-
-
+  
 BOOL CH3DEngine_DemoApp::OnIdle(LONG lCount)
 { 
 	( (CH3DEngine_DemoView*)( ((CMainFrame*)AfxGetMainWnd())->GetActiveView() ) )->RenderOneFrame();
