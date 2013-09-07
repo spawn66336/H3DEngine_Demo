@@ -171,12 +171,15 @@ void H3DEngineBox::RenderOneFrame( void )
 
 	m_pH3DRenderer->FrameBegin();
 	m_pH3DRenderer->ClearScreen(); 
+
+	m_pActor->Update( static_cast<float>(m_uiElapseTick) * 0.001f );
+	m_pLevel->Update( static_cast<float>(m_uiElapseTick) * 0.001f );  
 	 
 	m_pH3DRenderer->UpdateCpuSkin();
 	m_pH3DRenderer->ForceSyncData();
 	m_pH3DRenderer->UpdatePhx(m_uiElapseTick); 
 
-	m_pLevel->Update( static_cast<float>(m_uiElapseTick) * 0.001f ); 
+	
 	m_pH3DRenderer->PushScene( m_pLevel ); 
 	 
 	m_pH3DRenderer->Render();
@@ -280,21 +283,31 @@ void H3DEngineBox::InitResources( void )
 	H3DI::sCreateOp createOp; 
 	createOp.mat_lod = 0; 
 	m_pH3DRenderer->OpenActionLib( "../resources/art/role/actions/role.xml" );
+
+	String strActionName = "2PMShining";
+
+	if( m_pH3DRenderer->IsActionExist( strActionName.c_str() , H3DI::ACTOR_HUMAN , false ) )
+	{ 
+		m_pH3DRenderer->LoadAction( strActionName.c_str()  , H3DI::ACTOR_HUMAN , false );
+	}
 	m_pLevel = m_pH3DRenderer->CreateLevel( "Level0" );
 
 	m_pActor = 
 		(H3DI::IActor*)m_pH3DRenderer->CreateActor( 
 		createOp , strActorName.c_str() , false , H3DI::ACTION_UPDATE_PH );
-	  
+	 
+	//m_pActor->SetBodyPart("../resources/art/role/bodypart/female/hair/113025001/113025001.BPT");
+	m_pActor->SetBodyPart("../resources/art/role/bodypart/female/suit/119001001/1196001001/1196001001.BPT");
 	m_pActor->SetBodyPart("../resources/art/role/bodypart/female/trousers/116006001/116006001.BPT");
 	m_pActor->SetBodyPart("../resources/art/role/bodypart/female/shoe/118005001/118005001.BPT");
 
+	H3DI::IAnimationChannel* pAnimCh = 
+		m_pActor->GetAnmChannel( 0 );
+
+	pAnimCh->SetAction( strActionName.c_str() , true ); 
 	m_pActor->Update( 0 );
 
-	m_pLevel->AttachModel( (H3DI::IModel*)m_pActor , H3DI::SL_Actors );
-
-	
-
+	m_pLevel->AttachModel( (H3DI::IModel*)m_pActor , H3DI::SL_Actors ); 
 	m_pLevel->RestructScene();
 	 
 }
