@@ -1,13 +1,7 @@
 #include "H3DFPSCamera.h"
 
 namespace ZPH3D
-{
-
-	//const H3DVec3 H3DFPSCamera::CAM_INIT_DIR( 0.0f , 0.0f , 1.0f );
-	//const H3DVec3 H3DFPSCamera::CAM_INIT_RIGHT( 1.0f , 0.0f , 0.0f ); 
-	//const H3DVec3 H3DFPSCamera::CAM_INIT_UP( 0.0f , 1.0f , 0.0f ); 
-	//const H3DVec3 H3DFPSCamera::CAM_INIT_POS( 0.0f , 0.0f , -10.0f ); 
-
+{ 
 	const H3DVec3 H3DFPSCamera::CAM_INIT_DIR( 0.0f , 1.0f , 0.0f );
 	const H3DVec3 H3DFPSCamera::CAM_INIT_RIGHT( 1.0f , 0.0f , 0.0f ); 
 	const H3DVec3 H3DFPSCamera::CAM_INIT_UP( 0.0f , 0.0f , 1.0f ); 
@@ -46,7 +40,7 @@ namespace ZPH3D
 	void H3DFPSCamera::RotateWithUp( const float thetaInRad )
 	{
 		H3DQuat q;
-		q.FromAngleAxis( thetaInRad, CAM_INIT_UP );
+		q.FromAngleAxis( thetaInRad, m_v3Up );
 		m_qRotate=q*m_qRotate;
 		m_qRotate.Normalize();
 		this->_UpdateCameraCoords();
@@ -55,7 +49,7 @@ namespace ZPH3D
 	void H3DFPSCamera::RotateWithDir( const float thetaInRad )
 	{
 		H3DQuat q;
-		q.FromAngleAxis( thetaInRad, CAM_INIT_DIR );
+		q.FromAngleAxis( thetaInRad, m_v3Dir );
 		m_qRotate=q*m_qRotate;
 		m_qRotate.Normalize();
 		this->_UpdateCameraCoords();
@@ -64,7 +58,7 @@ namespace ZPH3D
 	void H3DFPSCamera::RotateWithRight( const float thetaInRad )
 	{
 		H3DQuat q;
-		q.FromAngleAxis( thetaInRad, CAM_INIT_RIGHT );
+		q.FromAngleAxis( thetaInRad, m_v3Right );
 		m_qRotate=q*m_qRotate;
 		m_qRotate.Normalize();
 		this->_UpdateCameraCoords();
@@ -72,7 +66,7 @@ namespace ZPH3D
 
 	void H3DFPSCamera::SetLookAtDir( const H3DVec3& at )
 	{
-		m_qRotate.GetRotationTo( CAM_INIT_DIR , at );
+		m_qRotate.GetRotationTo( m_v3Dir , at );
 		this->_UpdateCameraCoords();
 	}
 

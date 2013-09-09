@@ -4048,7 +4048,7 @@ namespace H3DI
 		//add by liren
 		//将地形放入管线
 		//virtual void PushTerrain(H3DI::ITerrain *pTerrain) = 0;
-		//!add by liren
+		//!add by liren 
 		virtual void PushScene(H3DI::IScene *pScene) = 0;
 		//add by liren
 		//在地形上创建一个面片

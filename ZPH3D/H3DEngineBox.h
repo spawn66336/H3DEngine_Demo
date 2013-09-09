@@ -3,7 +3,7 @@
 
 #include "ZPDependency.h"
 #include "engine_interface.h"
-#include "engine_interface_internal.h"
+#include "engine_interface_internal.h" 
 
 namespace  ZPH3D
 { 
@@ -13,6 +13,7 @@ namespace  ZPH3D
 	typedef H3DI::IProxyFactory* (*PF_CREATEIPROXYFACTORYPTR)();
 
 	class H3DFPSCamera;
+	class H3DScene;
 
 	class ZPEXPORT H3DEngineBox
 	{
@@ -80,8 +81,8 @@ namespace  ZPH3D
 		ISpecialEffectManager* m_pSpecEffectMgr; //特效管理器
 
 		H3DFPSCamera*	m_pCamera;						//当前相机
-		H3DI::ILevel*			m_pLevel;							//场景对象
-		H3DI::IActor*		m_pActor;							//角色
+		H3DScene*			m_pH3DScene;					
+		 
 
 		unsigned int m_uiLastTick;							//上一帧起始时的时间计数
 		unsigned int m_uiElapseTick;							//从上一帧到本帧流失的时间

@@ -206,7 +206,7 @@ void CH3DEngine_DemoView::OnMouseMove(UINT nFlags, CPoint point)
 		int dy = point.y - m_mousePoint.y;
 		m_mousePoint = point;
 
-		m_pH3DBox->RotateCameraWithUpAxis( static_cast<float>(dx) * 0.1f );
+		m_pH3DBox->RotateCameraWithUpAxis( static_cast<float>(dx) * -0.1f );
 		m_pH3DBox->RotateCameraWithRightAxis( static_cast<float>(dy) * 0.1f );
 
 	}

@@ -32,11 +32,15 @@
     <ClInclude Include="H3DFPSCamera.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="H3DScene.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="H3DEngineBox.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="H3DFPSCamera.cpp" />
+    <ClCompile Include="H3DScene.cpp" />
   </ItemGroup>
 </Project>

@@ -85,11 +85,13 @@
   <ItemGroup>
     <ClCompile Include="H3DEngineBox.cpp" />
     <ClCompile Include="H3DFPSCamera.cpp" />
+    <ClCompile Include="H3DScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="H3DEngineBox.h" />
     <ClInclude Include="H3DFPSCamera.h" />
     <ClInclude Include="ZPDependency.h" />
+    <ClInclude Include="H3DScene.h" />
     <ClInclude Include="ZPPlatform.h" />
     <ClInclude Include="ZPPredefine.h" />
     <ClInclude Include="ZPStdDependency.h" />
