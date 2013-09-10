@@ -12,6 +12,9 @@
     <Filter Include="源文件">
       <UniqueIdentifier>{6d227443-db03-47db-acfe-80fd81b938b1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="XML">
+      <UniqueIdentifier>{a1f7e5ec-2a7d-4ffb-8bb4-1bdc7c7a0c08}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="H3DEngineBox.h">
@@ -38,6 +41,12 @@
     <ClInclude Include="H3DDressSelector.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="H3DEngine\include\Utility\CommonCode\tixml\tinystr.h">
+      <Filter>XML</Filter>
+    </ClInclude>
+    <ClInclude Include="H3DEngine\include\Utility\CommonCode\tixml\tinyxml.h">
+      <Filter>XML</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="H3DEngineBox.cpp">
@@ -51,6 +60,18 @@
     </ClCompile>
     <ClCompile Include="H3DDressSelector.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="H3DEngine\include\Utility\CommonCode\tixml\tinystr.cpp">
+      <Filter>XML</Filter>
+    </ClCompile>
+    <ClCompile Include="H3DEngine\include\Utility\CommonCode\tixml\tinyxml.cpp">
+      <Filter>XML</Filter>
+    </ClCompile>
+    <ClCompile Include="H3DEngine\include\Utility\CommonCode\tixml\tinyxmlerror.cpp">
+      <Filter>XML</Filter>
+    </ClCompile>
+    <ClCompile Include="H3DEngine\include\Utility\CommonCode\tixml\tinyxmlparser.cpp">
+      <Filter>XML</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -53,7 +53,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ZPH3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\H3DEngine\include\;.\H3DEngine\include\Utility\CommonCode\idMath\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\H3DEngine\include\;.\H3DEngine\include\Utility\CommonCode\idMath\;.\H3DEngine\include\Utility\CommonCode\tixml\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -71,7 +71,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;ZPH3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\H3DEngine\include\;.\H3DEngine\include\Utility\CommonCode\idMath\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\H3DEngine\include\;.\H3DEngine\include\Utility\CommonCode\idMath\;.\H3DEngine\include\Utility\CommonCode\tixml\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -85,12 +85,18 @@
   <ItemGroup>
     <ClCompile Include="H3DDressSelector.cpp" />
     <ClCompile Include="H3DEngineBox.cpp" />
+    <ClCompile Include="H3DEngine\include\Utility\CommonCode\tixml\tinystr.cpp" />
+    <ClCompile Include="H3DEngine\include\Utility\CommonCode\tixml\tinyxml.cpp" />
+    <ClCompile Include="H3DEngine\include\Utility\CommonCode\tixml\tinyxmlerror.cpp" />
+    <ClCompile Include="H3DEngine\include\Utility\CommonCode\tixml\tinyxmlparser.cpp" />
     <ClCompile Include="H3DFPSCamera.cpp" />
     <ClCompile Include="H3DScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="H3DDressSelector.h" />
     <ClInclude Include="H3DEngineBox.h" />
+    <ClInclude Include="H3DEngine\include\Utility\CommonCode\tixml\tinystr.h" />
+    <ClInclude Include="H3DEngine\include\Utility\CommonCode\tixml\tinyxml.h" />
     <ClInclude Include="H3DFPSCamera.h" />
     <ClInclude Include="ZPDependency.h" />
     <ClInclude Include="H3DScene.h" />

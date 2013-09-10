@@ -291,6 +291,8 @@ void H3DEngineBox::_DrawHelpGrid( void )
 
 void H3DEngineBox::InitResources( void )
 {  
+	m_dressSelector.LoadDressesFromXmlFile("../resources/config/shared/item/dress.xml");
+
 	//打开动作库
 	m_pH3DRenderer->OpenActionLib( "../resources/art/role/actions/role.xml" ); 
 	//新建场景

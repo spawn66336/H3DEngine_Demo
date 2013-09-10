@@ -4,6 +4,7 @@
 #include "ZPDependency.h"
 #include "engine_interface.h"
 #include "engine_interface_internal.h" 
+#include "H3DDressSelector.h"
 
 namespace  ZPH3D
 { 
@@ -88,6 +89,7 @@ namespace  ZPH3D
 		H3DI::IProxyFactory* m_pProxyFactory;		//代理工厂
 		ISpecialEffectManager* m_pSpecEffectMgr; //特效管理器
 		H3DI::IVB*		m_pVB;
+		H3DDressSelector m_dressSelector;
 
 		bool						m_isEditMode;					//是否为编辑器模式
 		H3DFPSCamera*	m_pCamera;						//当前相机
