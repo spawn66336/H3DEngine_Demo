@@ -11,10 +11,9 @@ namespace ZPH3D
 		ZP_ASSERT( NULL != m_pRenderer ); 
 		m_pH3DLevel = m_pRenderer->CreateLevel( name.c_str() ); 
 
-		unsigned int uiFlags = m_pH3DLevel->GetFlags();
-		m_pH3DLevel->SetFlags( uiFlags| H3DI::I_ENTITY_CAST_SHADOW );
-	 
-		//m_pH3DLevel->Load("../resources/art/stage/palaceroom/palaceroom.xml");
+		//unsigned int uiFlags = m_pH3DLevel->GetFlags();
+		//m_pH3DLevel->SetFlags( uiFlags| H3DI::I_ENTITY_CAST_SHADOW );
+	  
 		ZP_ASSERT( NULL != m_pH3DLevel ); 
 	}
 
@@ -41,7 +40,7 @@ namespace ZPH3D
 		ZP_ASSERT( NULL != pActor );
 
 		unsigned int uiFlags = pActor->GetFlags();
-		pActor->SetFlags( uiFlags| H3DI::I_ENTITY_CAST_SHADOW );
+		pActor->SetFlags( uiFlags | H3DI::I_ENTITY_CAST_SHADOW |H3DI::I_ENTITY_FORCESYNCDATA );
 
 		pActor->Update(0);
 		m_actors.push_back( pActor );
@@ -56,13 +55,17 @@ namespace ZPH3D
 		H3DI::IAvatarSkeletonModel* pPet = 
 			(H3DI::IAvatarSkeletonModel*)m_pRenderer->CreateAvatarSkeletonModel( createOp , name.c_str() , male , H3DI::ACTION_UPDATE_X52 );
 		ZP_ASSERT( NULL != pPet );
+
+		unsigned int uiFlags = pPet->GetFlags();
+		pPet->SetFlags( uiFlags | H3DI::I_ENTITY_CAST_SHADOW | H3DI::I_ENTITY_FORCESYNCDATA );
+
 		pPet->Update(0);
 		m_pets.push_back( pPet );
 		m_pH3DLevel->AttachModel( pPet , H3DI::SL_Actors );
 		return pPet;
 	}
  
-	H3DI::IModel* H3DScene::CreateDml( const String& path , const int mat_lod  )
+	H3DI::IModel* H3DScene::CreateDml( const String& path , const int mat_lod  , const bool cast_shadow )
 	{
 		H3DI::sCreateOp createOp;
 		createOp.mat_lod = mat_lod;
@@ -71,8 +74,12 @@ namespace ZPH3D
 		ZP_ASSERT( NULL != pDml );
 
 		unsigned int uiFlags = pDml->GetFlags();
-		pDml->SetFlags( uiFlags| H3DI::I_ENTITY_CAST_SHADOW );
-
+		if( cast_shadow )
+		{
+			pDml->SetFlags( uiFlags | H3DI::I_ENTITY_CAST_SHADOW );
+		}else{
+			pDml->SetFlags( uiFlags & ~H3DI::I_ENTITY_CAST_SHADOW );
+		}
 		pDml->Update(0);
 		m_models.push_back( pDml );
 		m_pH3DLevel->AttachModel( pDml , H3DI::SL_DetailObj );
@@ -81,15 +88,14 @@ namespace ZPH3D
 
 	H3DI::IPrePassLight* H3DScene::CreateLight( const H3DI::LightAffectParam affect , const H3DI::LIGHT_TYPE type )
 	{
-		H3DI::IPrePassLight* pLight = m_pRenderer->CreatePrePassLight( type );
-
+		H3DI::IPrePassLight* pLight = m_pRenderer->CreatePrePassLight( type ); 
 		ZP_ASSERT( NULL != pLight );
 
 		unsigned int uiFlags = pLight->GetFlags();
 		pLight->SetFlags( uiFlags| H3DI::I_ENTITY_CAST_SHADOW );
-
+		 
 		pLight->SetLightAffectParam( affect );
-		m_lights.push_back( pLight );
+		_GetLightList( type ).push_back( pLight );
 		m_pH3DLevel->AttachModel((H3DI::IMoveObject*)pLight,H3DI::SL_Lights);
 		return pLight;
 	}
@@ -112,11 +118,25 @@ namespace ZPH3D
 			itPet++;
 		}
 
-		LightList_t::iterator itLight = m_lights.begin();
-		while( itLight != m_lights.end() )
+		LightList_t::iterator itPointLight = m_pointLights.begin();
+		while( itPointLight != m_pointLights.end() )
 		{
-			(*itLight)->Update( elapse );
-			itLight++;
+			(*itPointLight)->Update( elapse );
+			itPointLight++;
+		}
+
+		LightList_t::iterator itDirLight = m_dirLights.begin();
+		while( itDirLight != m_dirLights.end() )
+		{ 
+			(*itDirLight)->Update( elapse );
+			itDirLight++;
+		} 
+
+		LightList_t::iterator itProjLight = m_projLights.begin();
+		while( itProjLight != m_projLights.end() )
+		{ 
+			(*itProjLight)->Update( elapse );
+			itProjLight++;
 		}
 
 		ModelList_t::iterator itModel = m_models.begin();
@@ -159,14 +179,32 @@ namespace ZPH3D
 		}
 		m_pets.clear();
 
-		LightList_t::iterator itLight = m_lights.begin();
-		while( itLight != m_lights.end() )
+		LightList_t::iterator itPointLight = m_pointLights.begin();
+		while( itPointLight != m_pointLights.end() )
 		{
-			m_pH3DLevel->DetachModel( (*itLight) );
-			(*itLight)->Release(); 
-			itLight++;
+			m_pH3DLevel->DetachModel( (*itPointLight) );
+			(*itPointLight)->Release(); 
+			itPointLight++;
 		}
-		m_lights.clear();
+		m_pointLights.clear();
+
+		LightList_t::iterator itDirLight = m_dirLights.begin();
+		while( itDirLight != m_dirLights.end() )
+		{
+			m_pH3DLevel->DetachModel( (*itDirLight) );
+			(*itDirLight)->Release(); 
+			itDirLight++;
+		}
+		m_dirLights.clear();
+
+		LightList_t::iterator itProjLight = m_projLights.begin();
+		while( itProjLight != m_projLights.end() )
+		{
+			m_pH3DLevel->DetachModel( (*itProjLight) );
+			(*itProjLight)->Release(); 
+			itProjLight++;
+		}
+		m_projLights.clear();
 
 		ModelList_t::iterator itModel = m_models.begin();
 		while( itModel != m_models.end() )
@@ -179,7 +217,7 @@ namespace ZPH3D
 	}
 
 	void H3DScene::PushToRenderer( void )
-	{
+	{ 
 		m_pRenderer->PushScene( m_pH3DLevel );
 	}
 
@@ -189,8 +227,19 @@ namespace ZPH3D
 		pCam->Apply( m_pH3DLevel );
 	}
 
+	H3DScene::LightList_t& H3DScene::_GetLightList( const H3DI::LIGHT_TYPE type )
+	{
+		if( H3DI::LIGHT_DIR == type )
+		{
+			return m_dirLights;
+		}else if( H3DI::LIGHT_POINT == type ){
+			return m_pointLights;
+		}else if( H3DI::LIGHT_PROJECT == type ){
+			return m_projLights;
+		} 
+		return m_pointLights;
+	}
 
-
-
+	 
 
 }//namespace ZPH3D

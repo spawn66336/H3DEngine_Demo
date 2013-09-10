@@ -83,11 +83,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="H3DDressSelector.cpp" />
     <ClCompile Include="H3DEngineBox.cpp" />
     <ClCompile Include="H3DFPSCamera.cpp" />
     <ClCompile Include="H3DScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="H3DDressSelector.h" />
     <ClInclude Include="H3DEngineBox.h" />
     <ClInclude Include="H3DFPSCamera.h" />
     <ClInclude Include="ZPDependency.h" />

@@ -23,6 +23,7 @@ m_pfCreateRenderPtr(NULL),
 m_pfDeleteRenderPtr(NULL),
 m_pfCreateIProxyFactoryPtr(NULL),
 m_pCamera(NULL), 
+m_pVB(NULL),
 m_uiLastTick(0),
 m_uiElapseTick(0)
 {
@@ -85,8 +86,13 @@ void H3DEngineBox::Init( const HWND hWnd )
 	m_pH3DRenderer->EnableCloth( true );
 	m_pH3DRenderer->SetEnableAllPhy( true );
 	m_pH3DRenderer->EnableShadow( true );
-	m_pH3DRenderer->EnableLightPrePassRendering( false ); 
+	m_pH3DRenderer->EnableLightPrePassRendering( true ); 
 
+	m_pVB = m_pH3DRenderer->GetDynamicVB();
+	bool bCreateVBRes = m_pVB->CreateBuffer( 36 * 8192, 4096, - 1, - 1, 0, 0 );
+	ZP_ASSERT( true == bCreateVBRes );
+
+	m_pH3DRenderer->QueryInfo(1,(void*)(&m_isEditMode),0,0,0,0);
   
 	float fColor[4]={0.0f,0.0f,0.0f,0.0f};
 	m_pH3DRenderer->SetClearColor(fColor);
@@ -145,9 +151,8 @@ void H3DEngineBox::Destroy( void )
 {
 	this->DestroyResources();
 
-	//删除摄像机
-	delete m_pCamera;
-	m_pCamera = NULL;
+	//删除摄像机 
+	ZP_SAFE_DELETE( m_pCamera );
 
 	ZP_ASSERT( NULL != m_pfDeleteRenderPtr );
 	m_pfDeleteRenderPtr();
@@ -179,17 +184,21 @@ void H3DEngineBox::RenderOneFrame( void )
 	m_pH3DRenderer->ClearScreen();  
 	   
 	m_pH3DScene->Update( static_cast<float>(m_uiElapseTick) * 0.001f );
-	
-	m_pH3DRenderer->UpdateCpuSkin();
-	m_pH3DRenderer->ForceSyncData();
+
+	if( false == m_isEditMode )
+	{
+		m_pH3DRenderer->UpdateCpuSkin();
+		m_pH3DRenderer->ForceSyncData();
+	}
+
 	m_pH3DRenderer->UpdatePhx(m_uiElapseTick); 
 
 	m_pH3DScene->PushToRenderer();
-	m_pH3DRenderer->RenderLevelShadowMap( m_pH3DScene->GetH3DLevel() );
+
 	m_pH3DRenderer->Render();
 
 	//绘制基准网格
-	this->_DrawHelpGrid();
+	//this->_DrawHelpGrid();
 
 	m_pH3DRenderer->FrameEnd();  
 	m_pH3DRenderer->SwapBuffer();
@@ -281,14 +290,43 @@ void H3DEngineBox::_DrawHelpGrid( void )
 }
 
 void H3DEngineBox::InitResources( void )
-{
-	String strActorName = "ac2";
-	H3DI::sCreateOp createOp; 
-	createOp.mat_lod = 0; 
-
+{  
 	//打开动作库
-	m_pH3DRenderer->OpenActionLib( "../resources/art/role/actions/role.xml" );
+	m_pH3DRenderer->OpenActionLib( "../resources/art/role/actions/role.xml" ); 
+	//新建场景
+	m_pH3DScene = new H3DScene("Level0" , m_pH3DRenderer  );
 	
+	//创建角色
+	this->_InitActors();
+	//创建光源
+	this->_InitLights();
+	//创建场景静态模型
+	this->_InitDmls();
+	//创建后处理特效
+	this->_InitPostProcess(); 
+	  
+	m_pH3DScene->RestructScene();
+}
+
+void H3DEngineBox::DestroyResources( void )
+{
+	ZP_SAFE_DELETE( m_pH3DScene );
+}
+
+void H3DEngineBox::RotateCameraWithUpAxis( const float thetaInRad )
+{
+	m_pCamera->RotateWithUp( thetaInRad );
+}
+
+void H3DEngineBox::RotateCameraWithRightAxis( const float thetaInRad )
+{
+	m_pCamera->RotateWithRight( thetaInRad );
+}
+
+void H3DEngineBox::_InitActors( void )
+{
+	String strActorName = "ac2"; 
+	int iMatLod = 0;
 
 	//指定动作
 	String strActionName = "2PMShining"; 
@@ -297,18 +335,12 @@ void H3DEngineBox::InitResources( void )
 		m_pH3DRenderer->LoadAction( strActionName.c_str()  , H3DI::ACTOR_HUMAN , false );
 	}
 
-	//新建场景
-	m_pH3DScene = new H3DScene("Level0" , m_pH3DRenderer  );
-	
-	H3DI::IActor* pActor = m_pH3DScene->CreateActor( "actor0" , false , 0 );
-	 
+	//创建角色0
+	H3DI::IActor* pActor = m_pH3DScene->CreateActor( "actor0" , false , iMatLod ); 
 
-	pActor->SetBodyPart("../resources/art/role/bodypart/female/hair/113025001/113025001.BPT");
-	//pActor->SetBodyPart("../resources/art/role/bodypart/female/body/114036001/114036001.BPT");
-	pActor->SetBodyPart("../resources/art/role/bodypart/female/body/114004001/114004001.BPT");
-	//pActor->SetBodyPart("../resources/art/role/bodypart/female/trousers/116006001/116006001.BPT");
-	pActor->SetBodyPart("../resources/art/role/bodypart/female/trousers/116027001/116027001.BPT");
-	//pActor->SetBodyPart("../resources/art/role/bodypart/female/shoe/118005001/118005001.BPT");
+	pActor->SetBodyPart("../resources/art/role/bodypart/female/hair/113025001/113025001.BPT"); 
+	pActor->SetBodyPart("../resources/art/role/bodypart/female/body/114004001/114004001.BPT"); 
+	pActor->SetBodyPart("../resources/art/role/bodypart/female/trousers/116027001/116027001.BPT"); 
 	pActor->SetBodyPart("../resources/art/role/bodypart/female/shoe/118022001/118022001.BPT");
 
 	H3DI::IAnimationChannel* pAnimCh = 
@@ -324,52 +356,86 @@ void H3DEngineBox::InitResources( void )
 	pActor->SetAdornmentVisibility(H3DI::ACTOR_ADORNMENT_LEFTHAND, true);
 	pActor->SetAdornmentVisibility(H3DI::ACTOR_ADORNMENT_BACK, true); 
 
-	H3DI::IAvatarSkeletonModel* pPet = m_pH3DScene->CreatePet( "pet0" , false , 0 );
-	pPet->SetPosition( H3DVec3( 5.0f , 0.0f , 0.0f ) );
-	pAnimCh =  pPet->GetAnmChannel( 0 ); 
+	//创建角色1
+	pActor = m_pH3DScene->CreateActor( "actor1" , false , iMatLod ); 
+	pActor->SetPosition( H3DVec3(  -5.0f , 3.0f , 0.0f ) );
+
+	pActor->SetBodyPart("../resources/art/role/bodypart/female/hair/113011001/113011001.BPT"); 
+	pActor->SetBodyPart("../resources/art/role/bodypart/female/body/114036001/114036001.BPT"); 
+	pActor->SetBodyPart("../resources/art/role/bodypart/female/trousers/116006001/116006001.BPT"); 
+	pActor->SetBodyPart("../resources/art/role/bodypart/female/shoe/118005001/118005001.BPT");
+
+	pAnimCh = 
+		pActor->GetAnmChannel( 0 ); 
 	pAnimCh->SetAction( strActionName.c_str() , true );   
 
+	//创建角色2
+	pActor = m_pH3DScene->CreateActor( "actor2" , true , iMatLod ); 
+	pActor->SetPosition( H3DVec3(  5.0f , 3.0f , 0.0f ) );
+
+	pActor->SetBodyPart("../resources/art/role/bodypart/male/hair/103005001/103005001.BPT"); 
+	pActor->SetBodyPart("../resources/art/role/bodypart/male/body/104011001/104011001.BPT"); 
+	pActor->SetBodyPart("../resources/art/role/bodypart/male/trousers/106007001/106007001.BPT"); 
+	pActor->SetBodyPart("../resources/art/role/bodypart/male/shoe/108004001/108004001.BPT");
+
+	pAnimCh = 
+		pActor->GetAnmChannel( 0 ); 
+	pAnimCh->SetAction( strActionName.c_str() , true );   
+
+	//创建宠物
+	H3DI::IAvatarSkeletonModel* pPet = m_pH3DScene->CreatePet( "pet0" , false , iMatLod );
+	pPet->SetPosition( H3DVec3( 3.5f , 0.0f , 0.0f ) );
+	pAnimCh =  pPet->GetAnmChannel( 0 ); 
+	pAnimCh->SetAction( strActionName.c_str() , true );   
+}
+
+void H3DEngineBox::_InitLights( void )
+{
 	//创建光源
-	H3DI::IPrePassLight* pPrePassLight = m_pH3DScene->CreateLight( H3DI::AFFECT_ALL , H3DI::LIGHT_POINT ); 
-	 
-	float v4LightColor[] = { 175.0f ,175.0f ,175.0f ,255.0f }; 
-	float v4ShadowColor[] = { 255.0f , 0.0f , 0.0f , 255.0f };
-	  
-	pPrePassLight->SetPosition( H3DVec3( 0.0f , 0.0f , 5.0f ) );  
+	H3DI::IPrePassLight* pPrePassLight = m_pH3DScene->CreateLight( H3DI::AFFECT_ALL , H3DI::LIGHT_DIR ); 
+
+	float v4LightColor[] = { 0.75f ,0.75f ,0.75f , 1.0f }; 
+	float v4ShadowColor[] = { 0.0f , 0.0f , 0.0f , 1.0f };
+
+	H3DVec3 v3LightDir( 0.0f , 0.0f , 1.0f );
+	v3LightDir.Normalize();
+
+	pPrePassLight->SetDirection( v3LightDir );
 	pPrePassLight->SetColor( v4LightColor );
-	pPrePassLight->SetIntensity( 0.9f );
-	pPrePassLight->SetRange( 0.0f , 10.0f );
+	pPrePassLight->SetIntensity( 0.4f , 0.5f );
 	pPrePassLight->SetShadowColor( v4ShadowColor );
 	pPrePassLight->SetShadowEnable( true );
-	pPrePassLight->SetLightEnable( true );
-	 
+	pPrePassLight->SetLightEnable( true ); 
+}
+
+void H3DEngineBox::_InitDmls( void )
+{
+	int iMatLod = 0;
 
 	//创建静态模型 
-	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_carpet001.dml" , 0  );   
-	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_crown001.dml" , 0  );   
-	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_floor001.dml" , 0  );   
-	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_floor002.dml" , 0  );   
-	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_roof001.dml" , 0  ); 
-	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_roof002.dml" , 0  ); 
-	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_roof003.dml" , 0  ); 
-	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_outside101.dml" , 0  ); 
-	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_outsidetree001.dml" , 0  ); 
-	//m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_phy.dml" , 0  ); 
-	//m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_phy001.dml" , 0  ); 
-	//m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_pillar001.dml" , 0  ); 
-	//m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_pillar002.dml" , 0  ); 
-	//m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_pillar003.dml" , 0  ); 
-	//m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_pillar004.dml" , 0  ); 
-	//m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_pillar005.dml" , 0  ); 
-	//m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_door200.dml" , 0  ); 
-	//m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_throne001.dml" , 0  ); 
-	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_wall001.dml" , 0  ); 
-	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_wall004.dml" , 0  ); 
-	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_wall00301.dml" , 0  );
-	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_window001.dml" , 0  ); 
+	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_carpet001.dml"   );   
+	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_crown001.dml"  );   
+	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_floor001.dml"  );   
+	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_floor002.dml"  ); 
+	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_outside101.dml"  ); 
+	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_outsidetree001.dml"  );  
+	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_door200.dml"  );  
+	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_wall001.dml" , iMatLod , false  ); 
+	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_wall004.dml" , iMatLod , false  ); 
+	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_wall00301.dml" , iMatLod , false );
+	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_window001.dml" , iMatLod , false  );  
+	//屋顶不投射阴影
+	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_roof001.dml" , iMatLod , false ); 
+	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_roof002.dml" , iMatLod , false ); 
+	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_roof003.dml" , iMatLod , false );
+}
 
+void H3DEngineBox::_InitPostProcess( void )
+{
 	//添加后处理特效
-	m_pH3DScene->GetH3DLevel()->AddPostProcess( "../data/product/postprocess/UE3_Uber.xml" );
+	m_pH3DScene->GetH3DLevel()->AddPostProcess( "../data/product/postprocess/UE3_Uber.xml" );  
+	//m_pH3DScene->GetH3DLevel()->AddPostProcess( "../data/product/postprocess/FXAA.xml");
+
 #define SET_POSTPROCESS_PARAM(Name, InValue)	{ float Value = InValue; \
 	m_pH3DScene->GetH3DLevel()->SetPostProcessParam(Name, &Value, sizeof(float)); }
 
@@ -395,23 +461,6 @@ void H3DEngineBox::InitResources( void )
 
 #undef SET_POSTPROCESS_PARAMS
 #undef SET_POSTPROCESS_PARAM
-	  
-	m_pH3DScene->RestructScene();
-}
-
-void H3DEngineBox::DestroyResources( void )
-{
-	ZP_SAFE_DELETE( m_pH3DScene );
-}
-
-void H3DEngineBox::RotateCameraWithUpAxis( const float thetaInRad )
-{
-	m_pCamera->RotateWithUp( thetaInRad );
-}
-
-void H3DEngineBox::RotateCameraWithRightAxis( const float thetaInRad )
-{
-	m_pCamera->RotateWithRight( thetaInRad );
 }
 
 }//namespace ZPH3D

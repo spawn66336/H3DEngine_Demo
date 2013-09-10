@@ -70,6 +70,14 @@ namespace  ZPH3D
 
 		void _SetupCamera( void );
 
+		void _InitActors( void );
+
+		void _InitLights( void );
+
+		void _InitDmls( void );
+
+		void _InitPostProcess( void );
+
 	protected:
 
 		HWND m_hWnd;											//窗体句柄
@@ -79,7 +87,9 @@ namespace  ZPH3D
 		H3DI::IRender* m_pH3DRenderer;					//H3D渲染器
 		H3DI::IProxyFactory* m_pProxyFactory;		//代理工厂
 		ISpecialEffectManager* m_pSpecEffectMgr; //特效管理器
+		H3DI::IVB*		m_pVB;
 
+		bool						m_isEditMode;					//是否为编辑器模式
 		H3DFPSCamera*	m_pCamera;						//当前相机
 		H3DScene*			m_pH3DScene;					
 		 
