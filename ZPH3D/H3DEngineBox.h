@@ -84,6 +84,12 @@ namespace  ZPH3D
 
 		void _InitPostProcess( void );
 
+		void _InitUI( void );
+
+		void _PrepareUIToRender( void );
+
+		void _DrawUI( void );
+
 	protected:
 
 		HWND m_hWnd;											//窗体句柄
@@ -93,6 +99,7 @@ namespace  ZPH3D
 		H3DI::IRender* m_pH3DRenderer;					//H3D渲染器
 		H3DI::IProxyFactory* m_pProxyFactory;		//代理工厂
 		ISpecialEffectManager* m_pSpecEffectMgr; //特效管理器
+		H3DI::INewShader* m_pUIShader;
 		H3DI::IVB*		m_pVB;
 		H3DActionSelector m_actionSelector;
 		H3DDressSelector m_dressSelector;

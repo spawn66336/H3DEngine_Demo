@@ -23,6 +23,7 @@ m_pfCreateRenderPtr(NULL),
 m_pfDeleteRenderPtr(NULL),
 m_pfCreateIProxyFactoryPtr(NULL),
 m_pCamera(NULL), 
+m_pUIShader(NULL),
 m_pVB(NULL),
 m_uiLastTick(0),
 m_uiElapseTick(0)
@@ -88,9 +89,7 @@ void H3DEngineBox::Init( const HWND hWnd )
 	m_pH3DRenderer->EnableShadow( true );
 	m_pH3DRenderer->EnableLightPrePassRendering( true ); 
 
-	m_pVB = m_pH3DRenderer->GetDynamicVB();
-	bool bCreateVBRes = m_pVB->CreateBuffer( 36 * 8192, 4096, - 1, - 1, 0, 0 );
-	ZP_ASSERT( true == bCreateVBRes );
+
 
 	m_pH3DRenderer->QueryInfo(1,(void*)(&m_isEditMode),0,0,0,0);
   
@@ -192,11 +191,16 @@ void H3DEngineBox::RenderOneFrame( void )
 	}
 
 	m_pH3DRenderer->UpdatePhx(m_uiElapseTick); 
+
+
+
 	m_pH3DScene->PushToRenderer();
 	m_pH3DRenderer->Render();
 
 	//绘制基准网格
 	//this->_DrawHelpGrid();
+
+	_DrawUI();
 
 	m_pH3DRenderer->FrameEnd();  
 	m_pH3DRenderer->SwapBuffer();
@@ -299,19 +303,22 @@ void H3DEngineBox::InitResources( void )
 	m_pH3DScene = new H3DScene("Level0" , m_pH3DRenderer  );
 	
 	//创建角色
-	this->_InitActors();
+	//this->_InitActors();
 	//创建光源
 	this->_InitLights();
 	//创建场景静态模型
 	this->_InitDmls();
 	//创建后处理特效
 	this->_InitPostProcess(); 
+
+	this->_InitUI();
 	  
 	m_pH3DScene->RestructScene();
 }
 
 void H3DEngineBox::DestroyResources( void )
 {
+	m_pUIShader = NULL; 
 	ZP_SAFE_DELETE( m_pH3DScene );
 }
 
@@ -455,6 +462,92 @@ void H3DEngineBox::SwitchActorAction( void )
 	m_pH3DScene->SwitchActorAction( m_actionSelector ); 
 	m_actionSelector.NextAction();
 
+}
+
+void H3DEngineBox::_InitUI( void )
+{
+	m_pUIShader = m_pH3DRenderer->GetNewShader( "../resources/art/effect/ui/lib/x52_ingame_st_bk3.mat" , "x52_ingame_st_bk3" );
+	ZP_ASSERT( NULL != m_pUIShader );
+
+	m_pVB = m_pH3DRenderer->GetDynamicVB();
+	bool bCreateVBRes = m_pVB->CreateBuffer( 36 * 8192, 4096, - 1, - 1, 0, 0 );
+	ZP_ASSERT( true == bCreateVBRes );
+
+
+
+}
+
+void H3DEngineBox::_PrepareUIToRender( void )
+{
+	float points[12] = {
+		0,0,0, 
+		0,400,0, 
+		400,400,0, 
+		400,0,0 };
+		float color[12] = {1,1,1, 1,1,1, 1,1,1, 1,1,1};
+		float uv[8] = {
+			0,0,
+			1,0,
+			1,1,
+			0,1
+		};
+
+		unsigned short index[6] = {0,1,2,0,2,3};
+
+		float* pVertex = (float*)m_pVB->Lock( 
+			H3DI::VB_VERTEX_ARRAY , H3DI::VB_POS|H3DI::VB_COLOR|H3DI::VB_UV , 32 , 4 );
+
+		int i = 0;
+		for( int iVert = 0 ; iVert < 4 ; iVert++ )
+		{
+			pVertex[i++] = points[3*iVert];
+			pVertex[i++] = points[3*iVert+1];
+			pVertex[i++] = points[3*iVert+2];
+
+			pVertex[i++] = color[3*iVert];
+			pVertex[i++] = color[3*iVert+1];
+			pVertex[i++] = color[3*iVert+2];
+
+			pVertex[i++] = uv[2*iVert];
+			pVertex[i++] = uv[2*iVert+1];
+		}
+
+		m_pVB->UnLock(H3DI::VB_VERTEX_ARRAY); 
+		unsigned short* pIndex = (unsigned short*)m_pVB->Lock(H3DI::VB_ELEMENT_ARRAY,-1,-1,6);
+		for (int iIndx= 0; iIndx<6 ;iIndx++)
+		{
+			pIndex[iIndx] = index[iIndx];
+		}
+		m_pVB->UnLock(H3DI::VB_ELEMENT_ARRAY);
+}
+
+void H3DEngineBox::_DrawUI( void )
+{
+	if( m_pUIShader )
+	{  
+		_PrepareUIToRender();
+
+		H3DMat4 oldMat;
+		H3DMat4 oldViewMat;
+
+		m_pH3DRenderer->GetPerspective( oldMat );
+		m_pH3DRenderer->GetViewMatrix( oldViewMat );
+
+		H3DMat4 orthoMat;
+		H3DMat4 newViewMat;
+		newViewMat.Identity();
+		m_pH3DRenderer->GetOrthoProjectionMatrix( 0 , m_iWidth , m_iHeight , 0 , -1.0f , 1.0f , orthoMat ); 
+		m_pH3DRenderer->SetPerspective( orthoMat );
+		m_pH3DRenderer->SetViewMatrix( newViewMat );
+
+		//m_pH3DRenderer->BegineDrawIndex();
+		m_pH3DRenderer->SetNewShader( m_pUIShader );
+		m_pH3DRenderer->DrawIndexNew( H3DI::TRIANGLE_LIST , 6 , 4 , 0 , 24 , 0 , 0 ); 
+		//m_pH3DRenderer->EndDrawIndex(); 
+
+		m_pH3DRenderer->SetPerspective( oldMat );
+		m_pH3DRenderer->SetViewMatrix( oldViewMat );
+	}
 }
 
 }//namespace ZPH3D
