@@ -5,6 +5,7 @@
 #include "engine_interface.h"
 #include "engine_interface_internal.h" 
 #include "H3DDressSelector.h"
+#include "H3DActionSelector.h"
 
 namespace  ZPH3D
 { 
@@ -61,6 +62,10 @@ namespace  ZPH3D
 
 		void RotateCameraWithRightAxis( const float thetaInRad );
 
+		void RandomActorDresses( void );
+
+		void SwitchActorAction( void );
+
 	protected:
 
 		void _FrameBegin( void );
@@ -89,6 +94,7 @@ namespace  ZPH3D
 		H3DI::IProxyFactory* m_pProxyFactory;		//代理工厂
 		ISpecialEffectManager* m_pSpecEffectMgr; //特效管理器
 		H3DI::IVB*		m_pVB;
+		H3DActionSelector m_actionSelector;
 		H3DDressSelector m_dressSelector;
 
 		bool						m_isEditMode;					//是否为编辑器模式

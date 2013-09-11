@@ -1,5 +1,7 @@
 #include "H3DScene.h"
 #include "H3DFPSCamera.h"
+#include "H3DDressSelector.h"
+#include "H3DActionSelector.h"
 
 namespace ZPH3D
 { 
@@ -10,11 +12,7 @@ namespace ZPH3D
 	{
 		ZP_ASSERT( NULL != m_pRenderer ); 
 		m_pH3DLevel = m_pRenderer->CreateLevel( name.c_str() ); 
-
-		//unsigned int uiFlags = m_pH3DLevel->GetFlags();
-		//m_pH3DLevel->SetFlags( uiFlags| H3DI::I_ENTITY_CAST_SHADOW );
-	  
-		ZP_ASSERT( NULL != m_pH3DLevel ); 
+	 	ZP_ASSERT( NULL != m_pH3DLevel ); 
 	}
 
 
@@ -40,10 +38,18 @@ namespace ZPH3D
 		ZP_ASSERT( NULL != pActor );
 
 		unsigned int uiFlags = pActor->GetFlags();
-		pActor->SetFlags( uiFlags | H3DI::I_ENTITY_CAST_SHADOW |H3DI::I_ENTITY_FORCESYNCDATA );
-
+		pActor->SetFlags( uiFlags | H3DI::I_ENTITY_CAST_SHADOW |H3DI::I_ENTITY_FORCESYNCDATA ); 
 		pActor->Update(0);
-		m_actors.push_back( pActor );
+
+		for( int iAdornmentSlot = 0 ; 
+			iAdornmentSlot < H3DI::ACTOR_ADORNMENT_NUM ; 
+			iAdornmentSlot++ )
+		{
+			pActor->SetAdornmentVisibility( static_cast<H3DI::EActorAdornmentPosition>(iAdornmentSlot) , true );
+		}
+
+		_GetActorList( male ).push_back( pActor );
+
 		m_pH3DLevel->AttachModel( pActor , H3DI::SL_Actors );
 		return pActor;
 	}
@@ -58,8 +64,8 @@ namespace ZPH3D
 
 		unsigned int uiFlags = pPet->GetFlags();
 		pPet->SetFlags( uiFlags | H3DI::I_ENTITY_CAST_SHADOW | H3DI::I_ENTITY_FORCESYNCDATA );
-
 		pPet->Update(0);
+
 		m_pets.push_back( pPet );
 		m_pH3DLevel->AttachModel( pPet , H3DI::SL_Actors );
 		return pPet;
@@ -102,8 +108,16 @@ namespace ZPH3D
 
 	void H3DScene::Update( const float elapse )
 	{
-		ActorList_t::iterator itActor = m_actors.begin();
-		while( itActor != m_actors.end() )
+		ActorList_t::iterator itActor = m_maleActors.begin();
+		while( itActor != m_maleActors.end() )
+		{
+			(*itActor)->Update( elapse );
+			(*itActor)->UpdateAdornment( elapse );
+			itActor++;
+		}
+
+		itActor = m_femaleActors.begin();
+		while( itActor != m_femaleActors.end() )
 		{
 			(*itActor)->Update( elapse );
 			(*itActor)->UpdateAdornment( elapse );
@@ -161,14 +175,23 @@ namespace ZPH3D
 
 	void H3DScene::ClearScene( void )
 	{
-		ActorList_t::iterator itActor = m_actors.begin();
-		while( itActor != m_actors.end() )
+		ActorList_t::iterator itActor = m_maleActors.begin();
+		while( itActor != m_maleActors.end() )
 		{
 			m_pH3DLevel->DetachModel( (*itActor) ); 
 			(*itActor)->Release();
 			itActor++;
 		}
-		m_actors.clear();
+		m_maleActors.clear();
+
+		itActor = m_femaleActors.begin();
+		while( itActor != m_femaleActors.end() )
+		{
+			m_pH3DLevel->DetachModel( (*itActor) ); 
+			(*itActor)->Release();
+			itActor++;
+		}
+		m_femaleActors.clear();
 
 		PetList_t::iterator itPet = m_pets.begin();
 		while( itPet != m_pets.end() )
@@ -238,6 +261,55 @@ namespace ZPH3D
 			return m_projLights;
 		} 
 		return m_pointLights;
+	}
+
+	void H3DScene::RandomActorDress( H3DDressSelector& dressSelector )
+	{
+		ActorList_t::iterator itActor = m_maleActors.begin();
+		while( itActor != m_maleActors.end() )
+		{ 
+			dressSelector.RandomActorDresses( (*itActor) , true );  
+			itActor++;
+		}
+
+		itActor = m_femaleActors.begin();
+		while( itActor != m_femaleActors.end() )
+		{ 
+			dressSelector.RandomActorDresses( (*itActor) , false );  
+			itActor++;
+		}
+	}
+
+
+	void H3DScene::SwitchActorAction( H3DActionSelector& actionSelector )
+	{ 
+		ActorList_t::iterator itActor = m_maleActors.begin();
+		while( itActor != m_maleActors.end() )
+		{  
+			H3DI::IAnimationChannel* pAnimCh = 
+				(*itActor)->GetAnmChannel( 0 ); 
+			pAnimCh->SetAction( actionSelector.GetCurrAction(true).c_str() , true );     
+			itActor++;
+		}
+
+		itActor = m_femaleActors.begin();
+		while( itActor != m_femaleActors.end() )
+		{ 
+			H3DI::IAnimationChannel* pAnimCh = 
+				(*itActor)->GetAnmChannel( 0 ); 
+			pAnimCh->SetAction( actionSelector.GetCurrAction(false).c_str() , false );     
+			itActor++;
+		}
+	}
+
+
+	H3DScene::ActorList_t& H3DScene::_GetActorList( const bool male )
+	{
+		if( male )
+		{
+			return m_maleActors; 
+		}
+		return m_femaleActors;
 	}
 
 	 

@@ -46,6 +46,7 @@ BEGIN_MESSAGE_MAP(CH3DEngine_DemoView, CView)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()
+	ON_WM_CHAR()
 END_MESSAGE_MAP()
 
 // CH3DEngine_DemoView ¹¹Ôì/Îö¹¹
@@ -211,4 +212,20 @@ void CH3DEngine_DemoView::OnMouseMove(UINT nFlags, CPoint point)
 
 	}
 	CView::OnMouseMove(nFlags, point);
+}
+
+
+void CH3DEngine_DemoView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
+{ 
+	if( nChar == 'C' || nChar == 'c' )
+	{
+		m_pH3DBox->RandomActorDresses();
+	}
+
+	if( nChar == 'X' || nChar == 'x'  )
+	{
+		m_pH3DBox->SwitchActorAction();
+	}
+
+	CView::OnChar(nChar, nRepCnt, nFlags);
 }

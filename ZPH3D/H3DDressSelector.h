@@ -47,17 +47,18 @@ namespace ZPH3D
 		typedef std::vector<dressList_t> dressTypeList_t;
 	public:
 		H3DDressSelector(void);
-		virtual ~H3DDressSelector(void); 
-
-		void LoadDressesFromXmlFile( const String& filename );
-
+		virtual ~H3DDressSelector(void);  
+		void LoadDressesFromXmlFile( const String& filename ); 
+		void PreLoadActorBodyParts( H3DI::IRender* pRenderer );
+		void RandomActorDresses( H3DI::IActor* pActor , bool male ); 
 	protected:
-		
 		void	_ParseActorDressList( TiXmlElement* pXmlElem );
 		void	_ParseActorDress( const bool male , TiXmlElement* pXmlElem );
-		dressTypeList_t& _GetActorDressTypeList( const bool male );
-
+		void _ParseActorAdornment( const bool male , TiXmlElement* pXmlElem );
+		bool _IsResourceExist( const String& path );
+		dressTypeList_t& _GetActorDressTypeList( const bool male ); 
 	protected:
+		dressList_t m_currMaleDressSelection; 
 		dressTypeList_t m_maleDressTypeList;	
 		dressTypeList_t m_femaleDressTypeList;
 	};

@@ -83,6 +83,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="H3DActionSelector.cpp" />
     <ClCompile Include="H3DDressSelector.cpp" />
     <ClCompile Include="H3DEngineBox.cpp" />
     <ClCompile Include="H3DEngine\include\Utility\CommonCode\tixml\tinystr.cpp" />
@@ -93,6 +94,7 @@
     <ClCompile Include="H3DScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="H3DActionSelector.h" />
     <ClInclude Include="H3DDressSelector.h" />
     <ClInclude Include="H3DEngineBox.h" />
     <ClInclude Include="H3DEngine\include\Utility\CommonCode\tixml\tinystr.h" />

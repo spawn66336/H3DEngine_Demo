@@ -47,6 +47,9 @@
     <ClInclude Include="H3DEngine\include\Utility\CommonCode\tixml\tinyxml.h">
       <Filter>XML</Filter>
     </ClInclude>
+    <ClInclude Include="H3DActionSelector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="H3DEngineBox.cpp">
@@ -72,6 +75,9 @@
     </ClCompile>
     <ClCompile Include="H3DEngine\include\Utility\CommonCode\tixml\tinyxmlparser.cpp">
       <Filter>XML</Filter>
+    </ClCompile>
+    <ClCompile Include="H3DActionSelector.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

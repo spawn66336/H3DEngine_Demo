@@ -192,9 +192,7 @@ void H3DEngineBox::RenderOneFrame( void )
 	}
 
 	m_pH3DRenderer->UpdatePhx(m_uiElapseTick); 
-
 	m_pH3DScene->PushToRenderer();
-
 	m_pH3DRenderer->Render();
 
 	//绘制基准网格
@@ -291,8 +289,10 @@ void H3DEngineBox::_DrawHelpGrid( void )
 
 void H3DEngineBox::InitResources( void )
 {  
-	m_dressSelector.LoadDressesFromXmlFile("../resources/config/shared/item/dress.xml");
-
+	
+	m_dressSelector.LoadDressesFromXmlFile( "../resources/config/shared/item/dress.xml" );
+	//m_dressSelector.PreLoadActorBodyParts( m_pH3DRenderer );
+	m_actionSelector.LoadActionsFromXMLFile( "../resources/art/role/actions/role.xml" );
 	//打开动作库
 	m_pH3DRenderer->OpenActionLib( "../resources/art/role/actions/role.xml" ); 
 	//新建场景
@@ -326,8 +326,7 @@ void H3DEngineBox::RotateCameraWithRightAxis( const float thetaInRad )
 }
 
 void H3DEngineBox::_InitActors( void )
-{
-	String strActorName = "ac2"; 
+{ 
 	int iMatLod = 0;
 
 	//指定动作
@@ -338,48 +337,21 @@ void H3DEngineBox::_InitActors( void )
 	}
 
 	//创建角色0
-	H3DI::IActor* pActor = m_pH3DScene->CreateActor( "actor0" , false , iMatLod ); 
-
-	pActor->SetBodyPart("../resources/art/role/bodypart/female/hair/113025001/113025001.BPT"); 
-	pActor->SetBodyPart("../resources/art/role/bodypart/female/body/114004001/114004001.BPT"); 
-	pActor->SetBodyPart("../resources/art/role/bodypart/female/trousers/116027001/116027001.BPT"); 
-	pActor->SetBodyPart("../resources/art/role/bodypart/female/shoe/118022001/118022001.BPT");
-
+	H3DI::IActor* pActor = m_pH3DScene->CreateActor( "actor0" , false , iMatLod );  
 	H3DI::IAnimationChannel* pAnimCh = 
 		pActor->GetAnmChannel( 0 ); 
-	pAnimCh->SetAction( strActionName.c_str() , true );   
-
-	pActor->SetAdornment(H3DI::ACTOR_ADORNMENT_TAIL, "../resources/art/role/link/female/4112/4112001001/4112001001.spe");
-	pActor->SetAdornment(H3DI::ACTOR_ADORNMENT_LEFTHAND, "../resources/art/role/link/female/4113/4113002001/4113002001.spe");
-	pActor->SetAdornment(H3DI::ACTOR_ADORNMENT_RIGHTHAND, "../resources/art/role/link/female/4114/4114001001/4114001001.spe");
-	pActor->SetAdornment(H3DI::ACTOR_ADORNMENT_BACK, "../resources/art/role/link/female/4115/4115001001/4115001001.spe");
-	pActor->SetAdornmentVisibility(H3DI::ACTOR_ADORNMENT_TAIL, true);
-	pActor->SetAdornmentVisibility(H3DI::ACTOR_ADORNMENT_RIGHTHAND, true);
-	pActor->SetAdornmentVisibility(H3DI::ACTOR_ADORNMENT_LEFTHAND, true);
-	pActor->SetAdornmentVisibility(H3DI::ACTOR_ADORNMENT_BACK, true); 
+	pAnimCh->SetAction( strActionName.c_str() , true );    
 
 	//创建角色1
 	pActor = m_pH3DScene->CreateActor( "actor1" , false , iMatLod ); 
-	pActor->SetPosition( H3DVec3(  -5.0f , 3.0f , 0.0f ) );
-
-	pActor->SetBodyPart("../resources/art/role/bodypart/female/hair/113011001/113011001.BPT"); 
-	pActor->SetBodyPart("../resources/art/role/bodypart/female/body/114036001/114036001.BPT"); 
-	pActor->SetBodyPart("../resources/art/role/bodypart/female/trousers/116006001/116006001.BPT"); 
-	pActor->SetBodyPart("../resources/art/role/bodypart/female/shoe/118005001/118005001.BPT");
-
+	pActor->SetPosition( H3DVec3(  -5.0f , 3.0f , 0.0f ) );  
 	pAnimCh = 
 		pActor->GetAnmChannel( 0 ); 
 	pAnimCh->SetAction( strActionName.c_str() , true );   
 
 	//创建角色2
 	pActor = m_pH3DScene->CreateActor( "actor2" , true , iMatLod ); 
-	pActor->SetPosition( H3DVec3(  5.0f , 3.0f , 0.0f ) );
-
-	pActor->SetBodyPart("../resources/art/role/bodypart/male/hair/103005001/103005001.BPT"); 
-	pActor->SetBodyPart("../resources/art/role/bodypart/male/body/104011001/104011001.BPT"); 
-	pActor->SetBodyPart("../resources/art/role/bodypart/male/trousers/106007001/106007001.BPT"); 
-	pActor->SetBodyPart("../resources/art/role/bodypart/male/shoe/108004001/108004001.BPT");
-
+	pActor->SetPosition( H3DVec3(  5.0f , 3.0f , 0.0f ) );  
 	pAnimCh = 
 		pActor->GetAnmChannel( 0 ); 
 	pAnimCh->SetAction( strActionName.c_str() , true );   
@@ -389,6 +361,9 @@ void H3DEngineBox::_InitActors( void )
 	pPet->SetPosition( H3DVec3( 3.5f , 0.0f , 0.0f ) );
 	pAnimCh =  pPet->GetAnmChannel( 0 ); 
 	pAnimCh->SetAction( strActionName.c_str() , true );   
+
+	//为角色随机挑选衣服
+	m_pH3DScene->RandomActorDress( m_dressSelector );
 }
 
 void H3DEngineBox::_InitLights( void )
@@ -463,6 +438,23 @@ void H3DEngineBox::_InitPostProcess( void )
 
 #undef SET_POSTPROCESS_PARAMS
 #undef SET_POSTPROCESS_PARAM
+}
+
+void H3DEngineBox::RandomActorDresses( void )
+{
+	m_pH3DScene->RandomActorDress( m_dressSelector );
+}
+
+void H3DEngineBox::SwitchActorAction( void )
+{
+	String strMaleAction = m_actionSelector.GetCurrAction( true );
+	String strFemaleAction = m_actionSelector.GetCurrAction( false );
+
+	m_pH3DRenderer->LoadAction( strMaleAction.c_str() , H3DI::ACTOR_HUMAN , true );
+	m_pH3DRenderer->LoadAction( strFemaleAction.c_str() , H3DI::ACTOR_HUMAN , false ); 
+	m_pH3DScene->SwitchActorAction( m_actionSelector ); 
+	m_actionSelector.NextAction();
+
 }
 
 }//namespace ZPH3D

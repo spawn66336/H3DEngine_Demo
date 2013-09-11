@@ -6,6 +6,8 @@
 namespace ZPH3D
 {
 	class H3DFPSCamera;
+	class H3DDressSelector;
+	class H3DActionSelector;
 
 	class H3DScene
 	{
@@ -40,16 +42,23 @@ namespace ZPH3D
 
 		void ApplyCamera( H3DFPSCamera* pCam );
 
+		void RandomActorDress( H3DDressSelector& dressSelector );
+
+		void SwitchActorAction( H3DActionSelector& actionSelector );
+
 	protected:
 
 		H3DScene( void );
 
 		LightList_t& _GetLightList( const H3DI::LIGHT_TYPE type );
 
+		ActorList_t& _GetActorList( const bool male );
+
 	protected:
 		H3DI::IRender* m_pRenderer;
 		H3DI::ILevel*	 m_pH3DLevel;  //关卡
-		ActorList_t m_actors;				//角色列表
+		ActorList_t m_maleActors;		//男性角色列表
+		ActorList_t m_femaleActors;		//女性角色列表
 		ModelList_t m_models;				//模型列表
 
 		LightList_t m_pointLights;			//点光源列表
