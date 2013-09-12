@@ -5,6 +5,8 @@
 #include "engine_interface_internal.h"
 #include "EffectCore_dx.h"
 #include "H3DScene.h"
+#include "H3DActionSelector.h"
+#include "H3DDressSelector.h"
 
 
 namespace ZPH3D
@@ -25,6 +27,8 @@ m_pfCreateIProxyFactoryPtr(NULL),
 m_pCamera(NULL), 
 m_pUIShader(NULL),
 m_pVB(NULL),
+m_pActionSelector(NULL),
+m_pDressSelector(NULL),
 m_uiLastTick(0),
 m_uiElapseTick(0)
 {
@@ -106,7 +110,9 @@ void H3DEngineBox::Init( const HWND hWnd )
 	m_pProxyFactory = m_pfCreateIProxyFactoryPtr();
 	ZP_ASSERT( NULL != m_pProxyFactory );
 
-	m_pCamera = new H3DFPSCamera;
+	m_pCamera = new H3DFPSCamera; 
+	m_pActionSelector = new H3DActionSelector; 
+	m_pDressSelector = new H3DDressSelector;
 
 	this->InitResources();
 }
@@ -150,6 +156,8 @@ void H3DEngineBox::Destroy( void )
 {
 	this->DestroyResources();
 
+	ZP_SAFE_DELETE( m_pActionSelector ); 
+	ZP_SAFE_DELETE( m_pDressSelector ); 
 	//删除摄像机 
 	ZP_SAFE_DELETE( m_pCamera );
 
@@ -188,19 +196,16 @@ void H3DEngineBox::RenderOneFrame( void )
 	{
 		m_pH3DRenderer->UpdateCpuSkin();
 		m_pH3DRenderer->ForceSyncData();
-	}
-
+	} 
 	m_pH3DRenderer->UpdatePhx(m_uiElapseTick); 
-
-
-
+	 
 	m_pH3DScene->PushToRenderer();
 	m_pH3DRenderer->Render();
 
 	//绘制基准网格
-	//this->_DrawHelpGrid();
+	//_DrawHelpGrid();
 
-	_DrawUI();
+	//_DrawUI();
 
 	m_pH3DRenderer->FrameEnd();  
 	m_pH3DRenderer->SwapBuffer();
@@ -294,23 +299,23 @@ void H3DEngineBox::_DrawHelpGrid( void )
 void H3DEngineBox::InitResources( void )
 {  
 	
-	m_dressSelector.LoadDressesFromXmlFile( "../resources/config/shared/item/dress.xml" );
+	m_pDressSelector->LoadDressesFromXmlFile( "../resources/config/shared/item/dress.xml" );
 	//m_dressSelector.PreLoadActorBodyParts( m_pH3DRenderer );
-	m_actionSelector.LoadActionsFromXMLFile( "../resources/art/role/actions/role.xml" );
+	m_pActionSelector->LoadActionsFromXMLFile( "../resources/art/role/actions/role.xml" );
 	//打开动作库
 	m_pH3DRenderer->OpenActionLib( "../resources/art/role/actions/role.xml" ); 
 	//新建场景
 	m_pH3DScene = new H3DScene("Level0" , m_pH3DRenderer  );
 	
 	//创建角色
-	//this->_InitActors();
+	this->_InitActors();
 	//创建光源
 	this->_InitLights();
 	//创建场景静态模型
 	this->_InitDmls();
 	//创建后处理特效
 	this->_InitPostProcess(); 
-
+	//初始化UI
 	this->_InitUI();
 	  
 	m_pH3DScene->RestructScene();
@@ -370,7 +375,7 @@ void H3DEngineBox::_InitActors( void )
 	pAnimCh->SetAction( strActionName.c_str() , true );   
 
 	//为角色随机挑选衣服
-	m_pH3DScene->RandomActorDress( m_dressSelector );
+	m_pH3DScene->RandomActorDress( *m_pDressSelector );
 }
 
 void H3DEngineBox::_InitLights( void )
@@ -378,7 +383,8 @@ void H3DEngineBox::_InitLights( void )
 	//创建光源
 	H3DI::IPrePassLight* pPrePassLight = m_pH3DScene->CreateLight( H3DI::AFFECT_ALL , H3DI::LIGHT_DIR ); 
 
-	float v4LightColor[] = { 0.75f ,0.75f ,0.75f , 1.0f }; 
+	float v4LightColor[] = { 1.0f ,1.0f ,1.0f, 1.0f }; 
+	float v4LightColor2[] = { 150.0f , 0.0f  ,0.0f , 1.0f }; 
 	float v4ShadowColor[] = { 0.0f , 0.0f , 0.0f , 1.0f };
 
 	H3DVec3 v3LightDir( 0.0f , 0.0f , 1.0f );
@@ -386,20 +392,38 @@ void H3DEngineBox::_InitLights( void )
 
 	pPrePassLight->SetDirection( v3LightDir );
 	pPrePassLight->SetColor( v4LightColor );
-	pPrePassLight->SetIntensity( 0.4f , 0.5f );
+	pPrePassLight->SetIntensity( 0.9f );
 	pPrePassLight->SetShadowColor( v4ShadowColor );
 	pPrePassLight->SetShadowEnable( true );
 	pPrePassLight->SetLightEnable( true ); 
+
+	pPrePassLight = m_pH3DScene->CreateLight( H3DI::AFFECT_ALL , H3DI::LIGHT_POINT );
+
+	pPrePassLight->SetDirection( v3LightDir );
+	pPrePassLight->SetColor( v4LightColor2 );
+	pPrePassLight->SetPosition( H3DVec3( 0.0f , 5.0f , 0.0f ) ); 
+	pPrePassLight->SetIntensity( 0.9f );
+	pPrePassLight->SetRange( 0.0f , 10.0f );
+	pPrePassLight->SetLightEnable( true ); 
+
+	
+
 }
 
 void H3DEngineBox::_InitDmls( void )
 {
 	int iMatLod = 0;
 
+	float FloorPlane[] = { 0.0f , 0.0f , 1.0f , 0.0f };
+
 	//创建静态模型 
 	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_carpet001.dml"   );   
 	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_crown001.dml"  );   
-	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_floor001.dml"  );   
+
+	H3DI::IModel* pFloor001 = 
+		m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_floor001.dml"  );    
+
+
 	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_floor002.dml"  ); 
 	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_outside101.dml"  ); 
 	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_outsidetree001.dml"  );  
@@ -412,6 +436,8 @@ void H3DEngineBox::_InitDmls( void )
 	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_roof001.dml" , iMatLod , false ); 
 	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_roof002.dml" , iMatLod , false ); 
 	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_roof003.dml" , iMatLod , false );
+
+
 }
 
 void H3DEngineBox::_InitPostProcess( void )
@@ -449,53 +475,114 @@ void H3DEngineBox::_InitPostProcess( void )
 
 void H3DEngineBox::RandomActorDresses( void )
 {
-	m_pH3DScene->RandomActorDress( m_dressSelector );
+	m_pH3DScene->RandomActorDress( *m_pDressSelector );
 }
 
 void H3DEngineBox::SwitchActorAction( void )
 {
-	String strMaleAction = m_actionSelector.GetCurrAction( true );
-	String strFemaleAction = m_actionSelector.GetCurrAction( false );
+	String strMaleAction = m_pActionSelector->GetCurrAction( true );
+	String strFemaleAction = m_pActionSelector->GetCurrAction( false );
 
 	m_pH3DRenderer->LoadAction( strMaleAction.c_str() , H3DI::ACTOR_HUMAN , true );
 	m_pH3DRenderer->LoadAction( strFemaleAction.c_str() , H3DI::ACTOR_HUMAN , false ); 
-	m_pH3DScene->SwitchActorAction( m_actionSelector ); 
-	m_actionSelector.NextAction();
+	m_pH3DScene->SwitchActorAction( *m_pActionSelector ); 
+	m_pActionSelector->NextAction();
 
 }
 
 void H3DEngineBox::_InitUI( void )
 {
-	m_pUIShader = m_pH3DRenderer->GetNewShader( "../resources/art/effect/ui/lib/x52_ingame_st_bk3.mat" , "x52_ingame_st_bk3" );
+	//m_pUIShader = 
+	//	m_pH3DRenderer->GetNewShader( 
+	//	"../resources/art/effect/ui/lib/x52_ingame_st_bk3.mat" , 
+	//	"x52_ingame_st_bk3" );
+
+	//m_pUIShader = 
+	//	m_pH3DRenderer->GetNewShader( 
+	//	"../resources/art/effect/ui/lib/x52_ingame_st_bk.mat" ,
+	//	"x52_ingame_st_bk" );
+
+	m_pUIShader = 
+		m_pH3DRenderer->GetNewShader( 
+		"../resources/art/ui/zpui/1440_900_qixi_loading.mat" ,
+		"1440_900_qixi_loading" );
+
+	//m_pUIShader = 
+	//	m_pH3DRenderer->GetNewShader( 
+	//	"../resources/art/ui/hall/1440_900_x52_ui_hallback.mat" ,
+	//	"1440_900_x52_ui_hallback" );
+
+	//m_pUIShader = 
+	//	m_pH3DRenderer->GetNewShader( 
+	//	"../resources/art/role/bodypart/female/body/114004001/114004001.mat" , 
+	//	"114004001" );
+
+	//m_pUIShader = 
+	//	m_pH3DRenderer->GetNewShader( 
+	//	"../resources/art/role/link/female/4110/4110001001/4110001001.mat" , 
+	//	"4110001001" );
+
 	ZP_ASSERT( NULL != m_pUIShader );
 
 	m_pVB = m_pH3DRenderer->GetDynamicVB();
 	bool bCreateVBRes = m_pVB->CreateBuffer( 36 * 8192, 4096, - 1, - 1, 0, 0 );
-	ZP_ASSERT( true == bCreateVBRes );
-
-
-
+	ZP_ASSERT( true == bCreateVBRes ); 
 }
 
-void H3DEngineBox::_PrepareUIToRender( void )
+ 
+void H3DEngineBox::_DrawUI( void )
+{
+	H3DMat4 oldProjMat;
+	H3DMat4 oldViewMat;
+	m_pH3DRenderer->GetPerspective( oldProjMat );
+	m_pH3DRenderer->GetViewMatrix( oldViewMat );
+
+	H3DMat4 orthoMat;
+	H3DMat4 newViewMat;
+
+	newViewMat.Identity();
+	m_pH3DRenderer->GetOrthoProjectionMatrix( 
+		0.0f , static_cast<float>( m_iWidth ) , 
+		static_cast<float>( m_iHeight ) , 0.0f , 
+		-1.0f , 1.0f , orthoMat ); 
+
+	m_pH3DRenderer->SetPerspective( orthoMat );
+	m_pH3DRenderer->SetViewMatrix( newViewMat );  
+
+	if( m_pUIShader )
+	{   
+		_PrepareUI(); 
+		m_pH3DRenderer->SetNewShader( m_pUIShader );
+		m_pH3DRenderer->DrawIndexNew( H3DI::TRIANGLE_LIST , 6 , 4 , 0 , 24 , 12 , 24 );     
+	}
+	 
+	m_pH3DRenderer->SetPerspective( oldProjMat );
+	m_pH3DRenderer->SetViewMatrix( oldViewMat ); 
+}
+
+ 
+void H3DEngineBox::_PrepareUI( void )
 {
 	float points[12] = {
 		0,0,0, 
 		0,400,0, 
 		400,400,0, 
 		400,0,0 };
-		float color[12] = {1,1,1, 1,1,1, 1,1,1, 1,1,1};
+
+		float color[12] = { 1,1,1, 1,1,1, 1,1,1, 1,1,1 };
+
 		float uv[8] = {
 			0,0,
-			1,0,
+			0,1,
 			1,1,
-			0,1
+			1,0
 		};
 
 		unsigned short index[6] = {0,1,2,0,2,3};
 
-		float* pVertex = (float*)m_pVB->Lock( 
-			H3DI::VB_VERTEX_ARRAY , H3DI::VB_POS|H3DI::VB_COLOR|H3DI::VB_UV , 32 , 4 );
+		float* pVertex =
+			(float*)m_pVB->Lock( 
+			H3DI::VB_VERTEX_ARRAY , H3DI::VB_POS|H3DI::VB_COLOR|H3DI::VB_UV , 36 , 4 );
 
 		int i = 0;
 		for( int iVert = 0 ; iVert < 4 ; iVert++ )
@@ -506,48 +593,24 @@ void H3DEngineBox::_PrepareUIToRender( void )
 
 			pVertex[i++] = color[3*iVert];
 			pVertex[i++] = color[3*iVert+1];
-			pVertex[i++] = color[3*iVert+2];
-
-			pVertex[i++] = uv[2*iVert];
-			pVertex[i++] = uv[2*iVert+1];
+			pVertex[i++] = color[3*iVert+2];  
+		 
+			pVertex[i++]= 1.0f; 
+			pVertex[i++] = uv[2*iVert]; 
+			pVertex[i++] = uv[2*iVert+1]; 
 		}
 
 		m_pVB->UnLock(H3DI::VB_VERTEX_ARRAY); 
-		unsigned short* pIndex = (unsigned short*)m_pVB->Lock(H3DI::VB_ELEMENT_ARRAY,-1,-1,6);
+
+		unsigned short* pIndex = 
+			(unsigned short*)m_pVB->Lock(H3DI::VB_ELEMENT_ARRAY,-1,-1,6);
+
 		for (int iIndx= 0; iIndx<6 ;iIndx++)
 		{
 			pIndex[iIndx] = index[iIndx];
 		}
+
 		m_pVB->UnLock(H3DI::VB_ELEMENT_ARRAY);
-}
-
-void H3DEngineBox::_DrawUI( void )
-{
-	if( m_pUIShader )
-	{  
-		_PrepareUIToRender();
-
-		H3DMat4 oldMat;
-		H3DMat4 oldViewMat;
-
-		m_pH3DRenderer->GetPerspective( oldMat );
-		m_pH3DRenderer->GetViewMatrix( oldViewMat );
-
-		H3DMat4 orthoMat;
-		H3DMat4 newViewMat;
-		newViewMat.Identity();
-		m_pH3DRenderer->GetOrthoProjectionMatrix( 0 , m_iWidth , m_iHeight , 0 , -1.0f , 1.0f , orthoMat ); 
-		m_pH3DRenderer->SetPerspective( orthoMat );
-		m_pH3DRenderer->SetViewMatrix( newViewMat );
-
-		//m_pH3DRenderer->BegineDrawIndex();
-		m_pH3DRenderer->SetNewShader( m_pUIShader );
-		m_pH3DRenderer->DrawIndexNew( H3DI::TRIANGLE_LIST , 6 , 4 , 0 , 24 , 0 , 0 ); 
-		//m_pH3DRenderer->EndDrawIndex(); 
-
-		m_pH3DRenderer->SetPerspective( oldMat );
-		m_pH3DRenderer->SetViewMatrix( oldViewMat );
-	}
 }
 
 }//namespace ZPH3D

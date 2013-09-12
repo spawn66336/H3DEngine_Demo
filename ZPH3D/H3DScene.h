@@ -26,7 +26,7 @@ namespace ZPH3D
 		 
 		H3DI::IAvatarSkeletonModel* CreatePet( const String& name , const bool male , const int mat_lod = 0 );
 
-		H3DI::IModel* CreateDml( const String& path , const int mat_lod = 0 , const bool cast_shadow = true ); 
+		H3DI::IModel* CreateDml( const String& path , const int mat_lod = 0 , const bool cast_shadow = true , const bool refect = false ); 
 		 
 		H3DI::IPrePassLight* CreateLight( const H3DI::LightAffectParam affect , const H3DI::LIGHT_TYPE type );
 		 

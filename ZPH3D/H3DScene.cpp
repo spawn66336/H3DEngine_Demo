@@ -71,22 +71,43 @@ namespace ZPH3D
 		return pPet;
 	}
  
-	H3DI::IModel* H3DScene::CreateDml( const String& path , const int mat_lod  , const bool cast_shadow )
+	H3DI::IModel* H3DScene::CreateDml( 
+		const String& path , 
+		const int mat_lod  , 
+		const bool cast_shadow , 
+		const bool reflect )
 	{
 		H3DI::sCreateOp createOp;
 		createOp.mat_lod = mat_lod;
 		
-		H3DI::IModel* pDml =  m_pRenderer->CreateModel( createOp , path.c_str()  ); 
+		H3DI::IModel* pDml  = NULL;
+		if( reflect )
+		{
+			float FloorPlane[] = { 0.0f , 0.0f , 1.0f , 0.0f };
+			H3DI::IReflectModel* pRefectDml 
+				= m_pRenderer->CreateReflectModel( path.c_str() );
+			pRefectDml->SetPlane( FloorPlane );
+			pDml = pRefectDml; 
+		}else{
+			pDml =  m_pRenderer->CreateModel( createOp , path.c_str()  ); 
+		}
+
 		ZP_ASSERT( NULL != pDml );
 
 		unsigned int uiFlags = pDml->GetFlags();
 		if( cast_shadow )
 		{
-			pDml->SetFlags( uiFlags | H3DI::I_ENTITY_CAST_SHADOW );
+			uiFlags |= H3DI::I_ENTITY_CAST_SHADOW; 
 		}else{
-			pDml->SetFlags( uiFlags & ~H3DI::I_ENTITY_CAST_SHADOW );
-		}
-		pDml->Update(0);
+			uiFlags &= ~H3DI::I_ENTITY_CAST_SHADOW; 
+		} 
+		if( reflect )
+		{
+			uiFlags |= H3DI::I_ENTITY_RENDERIN_REFLECTION;
+		} 
+
+		pDml->SetFlags( uiFlags );
+		pDml->Update(0); 
 		m_models.push_back( pDml );
 		m_pH3DLevel->AttachModel( pDml , H3DI::SL_DetailObj );
 		return pDml;

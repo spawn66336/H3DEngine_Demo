@@ -3,9 +3,7 @@
 
 #include "ZPDependency.h"
 #include "engine_interface.h"
-#include "engine_interface_internal.h" 
-#include "H3DDressSelector.h"
-#include "H3DActionSelector.h"
+#include "engine_interface_internal.h"  
 
 namespace  ZPH3D
 { 
@@ -16,6 +14,8 @@ namespace  ZPH3D
 
 	class H3DFPSCamera;
 	class H3DScene;
+	class H3DActionSelector;
+	class H3DDressSelector;
 
 	class ZPEXPORT H3DEngineBox
 	{
@@ -85,8 +85,8 @@ namespace  ZPH3D
 		void _InitPostProcess( void );
 
 		void _InitUI( void );
-
-		void _PrepareUIToRender( void );
+		  
+		void _PrepareUI( void );
 
 		void _DrawUI( void );
 
@@ -101,8 +101,8 @@ namespace  ZPH3D
 		ISpecialEffectManager* m_pSpecEffectMgr; //特效管理器
 		H3DI::INewShader* m_pUIShader;
 		H3DI::IVB*		m_pVB;
-		H3DActionSelector m_actionSelector;
-		H3DDressSelector m_dressSelector;
+		H3DActionSelector* m_pActionSelector;
+		H3DDressSelector* m_pDressSelector;
 
 		bool						m_isEditMode;					//是否为编辑器模式
 		H3DFPSCamera*	m_pCamera;						//当前相机
@@ -110,7 +110,7 @@ namespace  ZPH3D
 		 
 
 		unsigned int m_uiLastTick;							//上一帧起始时的时间计数
-		unsigned int m_uiElapseTick;							//从上一帧到本帧流失的时间
+		unsigned int m_uiElapseTick;							//从上一帧到本帧流失的时间 
 
 	protected: //从引擎动态库中获得的函数
 		PF_CREATERENDERPTR m_pfCreateRenderPtr;
