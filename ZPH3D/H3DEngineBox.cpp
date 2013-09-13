@@ -111,6 +111,9 @@ void H3DEngineBox::Init( const HWND hWnd )
 	ZP_ASSERT( NULL != m_pProxyFactory );
 
 	m_pCamera = new H3DFPSCamera; 
+	m_pCamera->SetPos( H3DVec3( 0.0f , -17.0f , 5.0f ));
+	m_pCamera->SetLookAtPos( H3DVec3( 0.0f , 0.0f , 4.0f ) );
+
 	m_pActionSelector = new H3DActionSelector; 
 	m_pDressSelector = new H3DDressSelector;
 
@@ -387,27 +390,70 @@ void H3DEngineBox::_InitLights( void )
 	float v4LightColor2[] = { 150.0f , 0.0f  ,0.0f , 1.0f }; 
 	float v4ShadowColor[] = { 0.0f , 0.0f , 0.0f , 1.0f };
 
+	//设置方向光
 	H3DVec3 v3LightDir( 0.0f , 0.0f , 1.0f );
-	v3LightDir.Normalize();
-
+	v3LightDir.Normalize(); 
 	pPrePassLight->SetDirection( v3LightDir );
 	pPrePassLight->SetColor( v4LightColor );
-	pPrePassLight->SetIntensity( 0.9f );
+	pPrePassLight->SetIntensity( 0.0f );
 	pPrePassLight->SetShadowColor( v4ShadowColor );
 	pPrePassLight->SetShadowEnable( true );
 	pPrePassLight->SetLightEnable( true ); 
+	 
+	//pPrePassLight = m_pH3DScene->CreateLight( H3DI::AFFECT_ALL , H3DI::LIGHT_POINT ); 
+	//pPrePassLight->SetDirection( v3LightDir );
+	//pPrePassLight->SetColor( v4PointLightColor );
+	//pPrePassLight->SetPosition( H3DVec3( 0.0f , 0.0f , 5.0f ) ); 
+	//pPrePassLight->SetIntensity( 3.0f , 5.0f );
+	//pPrePassLight->SetRange( 0.0f , 10.0f );
+	//pPrePassLight->SetLightEnable( true ); 
 
-	pPrePassLight = m_pH3DScene->CreateLight( H3DI::AFFECT_ALL , H3DI::LIGHT_POINT );
-
-	pPrePassLight->SetDirection( v3LightDir );
-	pPrePassLight->SetColor( v4LightColor2 );
-	pPrePassLight->SetPosition( H3DVec3( 0.0f , 5.0f , 0.0f ) ); 
-	pPrePassLight->SetIntensity( 0.9f );
-	pPrePassLight->SetRange( 0.0f , 10.0f );
+	float v4SpotLightColor[]= {1.0f , 1.0f , 1.0f , 1.0f };
+	pPrePassLight = m_pH3DScene->CreateLight( H3DI::AFFECT_ALL , H3DI::LIGHT_PROJECT ); 
+	pPrePassLight->SetDirection( H3DVec3( 0.0f , 0.0f , 1.0f ) );
+	pPrePassLight->SetColor( v4SpotLightColor );
+	pPrePassLight->SetPosition( H3DVec3( 0.0f , -2.0f , 30.0f ) ); 
+	pPrePassLight->SetAngle( 50.0f , 60.0f ); 
+	pPrePassLight->SetIntensity( 2.0f , 5.0f );
+	pPrePassLight->SetRange( 0.0f , 100.0f );
 	pPrePassLight->SetLightEnable( true ); 
 
-	
+	H3DVec3 v3LookAt( 0.0f , 0.0f , 0.0f ); 
 
+	{//创建光柱
+		 
+		m_pH3DScene->CreateLightBeam(
+			H3DVec3( 0.0f , -2.0f , 5.0f ) , v3LookAt , H3DVec4( 1.0f , 1.0f , 1.0f ,1.0f ) , 1.0f );
+	 
+		m_pH3DScene->CreateLightBeam(
+			H3DVec3( -5.0f , -4.0f ,5.0f ) , v3LookAt , H3DVec4( 1.0f , 0.0f , 0.0f ,1.0f ) , 1.5f  );
+
+		m_pH3DScene->CreateLightBeam(
+			H3DVec3( 5.0f , -4.0f , 5.0f ) , v3LookAt , H3DVec4( 0.0f , 0.0f , 1.0f ,1.0f ) , 0.5f );
+
+
+		m_pH3DScene->CreateLightBeam(
+			H3DVec3( 0.0f , 5.0f , 1.0f ) , H3DVec3( 0.0f , 0.0f , 0.0f ) , H3DVec4( 1.0f , 1.0f , 1.0f ,1.0f ) , 0.5f );
+
+		m_pH3DScene->CreateLightBeam(
+			H3DVec3( -5.0f , 5.0f ,1.0f ) , H3DVec3(  5.0f , 3.0f , 0.0f )  , H3DVec4( 1.0f , 1.0f , 0.0f ,1.0f ) , 0.0f  );
+
+		m_pH3DScene->CreateLightBeam(
+			H3DVec3( 5.0f , 5.0f , 1.0f ) , H3DVec3(  -5.0f , 3.0f , 0.0f ) , H3DVec4( 0.0f , 1.0f , 1.0f ,1.0f ) , -0.5f );
+
+
+
+		m_pH3DScene->CreateLightBeam(
+			H3DVec3( 0.0f , 7.0f , 2.0f ) , H3DVec3( 0.0f , 6.0f , 3.0f ) , H3DVec4( 1.0f , 0.0f , 1.0f ,1.0f ) , 0.5f );
+
+		m_pH3DScene->CreateLightBeam(
+			H3DVec3( -5.0f , 7.0f ,2.0f ) , H3DVec3(  -5.0f , 6.0f  , 3.0f )  , H3DVec4( 0.0f , 1.0f , 0.0f ,1.0f ) , 0.0f  );
+
+		m_pH3DScene->CreateLightBeam(
+			H3DVec3( 5.0f , 7.0f , 2.0f ) , H3DVec3(  5.0f , 6.0f  , 3.0f ) , H3DVec4( 1.0f , 1.0f , 0.0f ,1.0f ) , -0.5f );
+
+	}
+	  
 }
 
 void H3DEngineBox::_InitDmls( void )
@@ -456,8 +502,8 @@ void H3DEngineBox::_InitPostProcess( void )
 	SET_POSTPROCESS_PARAM("SceneDesaturation",1.0f);
 	SET_POSTPROCESS_PARAMS("GammaOverlayColor",0.f);
 	SET_POSTPROCESS_PARAMS("GammaColorScale",1.0f);
-	SET_POSTPROCESS_PARAM("DOF_Dist",5.0f);
-	SET_POSTPROCESS_PARAM("DOF_Range",10.0f);
+	SET_POSTPROCESS_PARAM("DOF_Dist",10.0f);
+	SET_POSTPROCESS_PARAM("DOF_Range",20.0f);
 	SET_POSTPROCESS_PARAM("DOF_Inner",10.0f);
 	SET_POSTPROCESS_PARAM("DOFKernal",1.0f);
 	SET_POSTPROCESS_PARAM("BloomKernal",1.0f);

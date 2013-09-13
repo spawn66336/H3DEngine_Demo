@@ -127,8 +127,48 @@ namespace ZPH3D
 		return pLight;
 	}
 
+
+	H3DI::IPrePassLight* H3DScene::CreateLightBeam( 
+		const H3DVec3& pos , const H3DVec3& lookAt , const H3DVec4& color  , const float timeOffset )
+	{
+		H3DI::IPrePassLight* pLightBeam = m_pRenderer->CreatePrePassLight( H3DI::LIGHT_PROJECT ); 
+		ZP_ASSERT( NULL != pLightBeam ); 
+
+		pLightBeam->SetLightAffectParam( H3DI::AFFECT_ALL );
+
+		float fInnerAngle = 30.0f;
+		float fOutterAngle = 40.0f;
+		float fNear = 0.0f;
+		float fFar = 4.0f;
+
+		pLightBeam->SetPosition( pos );
+		pLightBeam->SetColor( (float*)(&color.x));
+
+		pLightBeam->SetAngle( fInnerAngle , fOutterAngle );
+		pLightBeam->SetRange( fNear , 50.0f ); 
+		pLightBeam->SetIntensity( 3.0f , 5.0f );
+		pLightBeam->SetLightEnable( true );
+
+		pLightBeam->CreateLightBeam( H3DI::E_H3D_BEAM_UE );
+		pLightBeam->SetBeamAngle( fInnerAngle , fOutterAngle );
+		pLightBeam->SetBeamRange( fNear , fFar );
+		pLightBeam->SetBeamBrightness( 1.0f ); 
+		pLightBeam->SetBeamVisable( true );
+
+		H3DLightBeamControl lightCtrl( pLightBeam );
+		lightCtrl.SetTimeOffset( timeOffset );
+		lightCtrl.SetLookAt( lookAt );
+
+		m_lightCtrls.push_back( lightCtrl );
+		m_lightBeams.push_back( pLightBeam );
+		m_pH3DLevel->AttachModel((H3DI::IMoveObject*)pLightBeam,H3DI::SL_Lights);
+		return pLightBeam;
+	}
+
+
 	void H3DScene::Update( const float elapse )
 	{
+		//更新男性角色
 		ActorList_t::iterator itActor = m_maleActors.begin();
 		while( itActor != m_maleActors.end() )
 		{
@@ -137,6 +177,7 @@ namespace ZPH3D
 			itActor++;
 		}
 
+		//更新女性角色
 		itActor = m_femaleActors.begin();
 		while( itActor != m_femaleActors.end() )
 		{
@@ -145,6 +186,7 @@ namespace ZPH3D
 			itActor++;
 		}
 
+		//更新宠物
 		PetList_t::iterator itPet = m_pets.begin();
 		while( itPet != m_pets.end() )
 		{
@@ -153,6 +195,7 @@ namespace ZPH3D
 			itPet++;
 		}
 
+		//更新点光源
 		LightList_t::iterator itPointLight = m_pointLights.begin();
 		while( itPointLight != m_pointLights.end() )
 		{
@@ -160,6 +203,7 @@ namespace ZPH3D
 			itPointLight++;
 		}
 
+		//更新方向光源
 		LightList_t::iterator itDirLight = m_dirLights.begin();
 		while( itDirLight != m_dirLights.end() )
 		{ 
@@ -167,6 +211,7 @@ namespace ZPH3D
 			itDirLight++;
 		} 
 
+		//更新投影光源
 		LightList_t::iterator itProjLight = m_projLights.begin();
 		while( itProjLight != m_projLights.end() )
 		{ 
@@ -174,12 +219,28 @@ namespace ZPH3D
 			itProjLight++;
 		}
 
+		//更新光柱
+		LightList_t::iterator itLightBeam = m_lightBeams.begin();
+		while( itLightBeam != m_lightBeams.end() )
+		{ 
+			(*itLightBeam)->Update( elapse );
+			itLightBeam++;
+		}
+
+		LightCtrlList_t::iterator itLightCtrl = m_lightCtrls.begin();
+		while( itLightCtrl != m_lightCtrls.end() )
+		{
+			(*itLightCtrl).Update( elapse );
+			itLightCtrl++;
+		}
+
+		//更新模型
 		ModelList_t::iterator itModel = m_models.begin();
 		while( itModel != m_models.end() )
 		{
 			(*itModel)->Update( elapse );
 			itModel++;
-		}
+		} 
 
 		m_pH3DLevel->Update( elapse );
 	}
@@ -249,6 +310,15 @@ namespace ZPH3D
 			itProjLight++;
 		}
 		m_projLights.clear();
+
+		LightList_t::iterator itLightBeam = m_lightBeams.begin();
+		while( itLightBeam != m_lightBeams.end() )
+		{
+			m_pH3DLevel->DetachModel( (*itLightBeam) );
+			(*itLightBeam)->Release();
+			itLightBeam++;
+		}
+		m_lightBeams.clear();
 
 		ModelList_t::iterator itModel = m_models.begin();
 		while( itModel != m_models.end() )
@@ -332,7 +402,136 @@ namespace ZPH3D
 		}
 		return m_femaleActors;
 	}
+	 
+
+	H3DLightBeamControl::H3DLightBeamControl():
+	m_v3Pos( INIT_POS ),
+	m_v3Dir( INIT_DIR ),
+	m_v3Up( INIT_UP ),
+	m_v3Right( INIT_RIGHT ),
+	m_fHoriSpeed( INIT_HORI_SPEED ),
+	m_fVertSpeed( INIT_VERT_SPEED ),
+	m_fHoriBeginAngle( - 40.0f ),
+	m_fHoriEndAngle( 40.0f ),
+	m_fHoriAngle(0.0f),
+	m_fT( 0.0f ),
+	m_pLightBeam(NULL)
+	{ 
+		m_qRotate.Identity();
+	}
+
+
+	H3DLightBeamControl::H3DLightBeamControl( const H3DLightBeamControl& ctrl )
+	{
+		this->operator=( ctrl );
+	}
+
+
+	H3DLightBeamControl::H3DLightBeamControl( H3DI::IPrePassLight* pLight ):
+	m_v3Pos( INIT_POS ),
+	m_v3Dir( INIT_DIR ),
+	m_v3Up( INIT_UP ),
+	m_v3Right( INIT_RIGHT ),
+	m_fHoriSpeed( INIT_HORI_SPEED ),
+	m_fVertSpeed( INIT_VERT_SPEED ), 
+	m_fHoriBeginAngle( - 40.0f ),
+	m_fHoriEndAngle( 40.0f ),
+	m_fHoriAngle(0.0f),
+	m_fT( 0.0f ),
+	m_pLightBeam( pLight )
+	{ 
+		m_pLightBeam->GetPosition( m_v3Pos );
+		m_qRotate.Identity();
+	}
+
+	H3DLightBeamControl::~H3DLightBeamControl()
+	{  
+	}
+
+	void H3DLightBeamControl::Update( const float elapse )
+	{
+		float fRadHoriSpeed = DEG2RAD( m_fHoriSpeed );
+		float fRadVertSpeed = DEG2RAD( m_fVertSpeed ); 
+		m_fT += elapse; 
+		float fFactor = H3DMath::Cos( fRadHoriSpeed * m_fT );
+		fFactor = ( fFactor + 1.0f ) * 0.5f; 
+		m_fHoriAngle = m_fHoriBeginAngle + ( m_fHoriEndAngle - m_fHoriBeginAngle )*fFactor; 
+		_Apply();
+	}
+
+	void H3DLightBeamControl::SetPos( const H3DVec3& pos  )
+	{
+		m_v3Pos = pos;  
+		_Apply();
+	}
+
+	void H3DLightBeamControl::_Apply( void )
+	{
+		H3DQuat q;
+		q.FromAngleAxis( m_fHoriAngle , m_v3Up );
+
+		H3DVec3 v3Right = m_v3Right*q;
+		v3Right.Normalize();
+
+		H3DVec3 v3Dir= m_v3Dir*q;
+		v3Dir.Normalize();
+
+		H3DVec3 v3Up= m_v3Up*q;
+		v3Up.Normalize();
+
+		m_pLightBeam->SetDirection( -v3Dir ); 
+		m_pLightBeam->SetPosition( m_v3Pos );
+
+		//H3DVec4 v[4];
+		//v[0].Set( v3Right.x , v3Right.y , v3Right.z , 0.0f );  
+		//v[1].Set( v3Dir.x , v3Dir.y , v3Dir.z , 0.0f ); 
+		//v[2].Set( v3Up.x , v3Up.y , v3Up.z , 0.0f );  
+		//v[3].Set( m_v3Pos.x , m_v3Pos.y , m_v3Pos.z , 1.0f );
+		//H3DMat4 mat( v[0] , v[1] , v[2] , v[3] ); 
+		//m_pLightBeam->SetLocationMatrix( mat.Transpose() );
+	}
+	 
+	void H3DLightBeamControl::SetLookAt( const H3DVec3& lookAt )
+	{
+		m_v3Dir = lookAt - m_v3Pos;
+		m_v3Dir.Normalize();
+		m_v3Right = m_v3Dir.Cross( m_v3Up );
+		m_v3Right.Normalize();
+		m_v3Up = m_v3Right.Cross( m_v3Dir );
+		m_v3Up.Normalize();
+	}
 
 	 
+	H3DLightBeamControl& H3DLightBeamControl::operator=( const H3DLightBeamControl& rhs )
+	{
+		m_v3Pos = rhs.m_v3Pos;
+		m_v3Dir = rhs.m_v3Dir;
+		m_v3Up = rhs.m_v3Up;
+		m_v3Right = rhs.m_v3Right;
+		m_qRotate = rhs.m_qRotate;		 
+		m_fHoriSpeed = rhs.m_fHoriSpeed; 
+		m_fVertSpeed = rhs.m_fVertSpeed; 
+		m_fHoriBeginAngle = rhs.m_fHoriBeginAngle;
+		m_fHoriEndAngle = rhs.m_fHoriEndAngle;
+		m_fHoriAngle = rhs.m_fHoriAngle;
+		m_fT = rhs.m_fT;			
+		m_pLightBeam = rhs.m_pLightBeam;
+		return *this;
+	}
+
+	void H3DLightBeamControl::SetTimeOffset( const float offset )
+	{
+		m_fT += offset;
+	}
+
+	
+
+	const H3DVec3 H3DLightBeamControl::INIT_POS( 0.0f , 0.0f , 0.0f ); 
+	const H3DVec3 H3DLightBeamControl::INIT_DIR( 0.0f , 1.0f , 0.0f ); 
+	const H3DVec3 H3DLightBeamControl::INIT_RIGHT( -1.0f , 0.0f , 0.0f ); 
+	const H3DVec3 H3DLightBeamControl::INIT_UP( 0.0f , 0.0f , 1.0f );
+	const float H3DLightBeamControl::INIT_HORI_SPEED = 90.0f; 
+	const float H3DLightBeamControl::INIT_VERT_SPEED = 40.0f;
+
 
 }//namespace ZPH3D
