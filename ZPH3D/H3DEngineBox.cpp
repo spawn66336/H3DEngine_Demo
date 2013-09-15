@@ -101,6 +101,9 @@ void H3DEngineBox::Init( const HWND hWnd )
 	m_pH3DRenderer->SetClearColor(fColor);
 	m_pH3DRenderer->SetClearFlags( 
 		H3DI::CLEAR_BUF_COLOR|H3DI::CLEAR_BUF_DEPTH|H3DI::CLEAR_BUF_STENCIL );
+	float v4Ambient[] = { 0.15f , 0.15f , 0.15f , 1.0f };
+	m_pH3DRenderer->SetAmbientColor( v4Ambient );
+
 
 	//创建特效管理器
 	m_pSpecEffectMgr=m_pH3DRenderer->CreateEffectManager();

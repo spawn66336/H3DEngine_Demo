@@ -12,7 +12,10 @@ namespace ZPH3D
 	{
 		ZP_ASSERT( NULL != m_pRenderer ); 
 		m_pH3DLevel = m_pRenderer->CreateLevel( name.c_str() ); 
-	 	ZP_ASSERT( NULL != m_pH3DLevel ); 
+		float v4Ambient[]= { 0.25f , 0.25f , 0.25f , 1.0f };
+		m_pH3DLevel->SetAmbientColor( v4Ambient );
+		m_pH3DLevel->SetActorAmbientColor( v4Ambient );
+		ZP_ASSERT( NULL != m_pH3DLevel ); 
 	}
 
 
