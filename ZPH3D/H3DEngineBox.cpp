@@ -211,7 +211,7 @@ void H3DEngineBox::RenderOneFrame( void )
 	//绘制基准网格
 	//_DrawHelpGrid();
 
-	//_DrawUI();
+	_DrawUI();
 
 	m_pH3DRenderer->FrameEnd();  
 	m_pH3DRenderer->SwapBuffer();
@@ -380,6 +380,12 @@ void H3DEngineBox::_InitActors( void )
 	pAnimCh =  pPet->GetAnmChannel( 0 ); 
 	pAnimCh->SetAction( strActionName.c_str() , true );   
 
+	H3DI::IAvatarSkeletonModel* pPet2 = m_pH3DScene->CreatePet("pet1" , true , iMatLod );
+	pPet2->SetPosition( H3DVec3( -3.5f, 0.0f , 0.0f ) );
+	pAnimCh = pPet2->GetAnmChannel( 0 );
+	pPet2->SetBodyPart("../resources/art/role/Pet/male/body/304018001/304018001.BPT");
+	pAnimCh->SetAction( strActionName.c_str() , true );
+
 	//为角色随机挑选衣服
 	m_pH3DScene->RandomActorDress( *m_pDressSelector );
 }
@@ -387,32 +393,28 @@ void H3DEngineBox::_InitActors( void )
 void H3DEngineBox::_InitLights( void )
 {
 	//创建光源
-	H3DI::IPrePassLight* pPrePassLight = m_pH3DScene->CreateLight( H3DI::AFFECT_ALL , H3DI::LIGHT_DIR ); 
+	H3DI::IPrePassLight* pPrePassLight = m_pH3DScene->CreateLight( H3DI::AFFECT_SCENE_ONLY , H3DI::LIGHT_DIR ); 
 
-	float v4LightColor[] = { 1.0f ,1.0f ,1.0f, 1.0f }; 
-	float v4LightColor2[] = { 150.0f , 0.0f  ,0.0f , 1.0f }; 
-	float v4ShadowColor[] = { 0.0f , 0.0f , 0.0f , 1.0f };
+	float v4LightColor[] = { 0.6f ,0.6f ,0.6f, 1.0f };  
+	float v4ShadowColor[] = { 0.0f , 0.0f , 0.0f , 1.0f }; 
 
 	//设置方向光
-	H3DVec3 v3LightDir( 0.0f , 0.0f , 1.0f );
+	H3DVec3 v3LightDir( 0.0f , 0.0f , 1.0f ); 
 	v3LightDir.Normalize(); 
-	pPrePassLight->SetDirection( v3LightDir );
+
+	H3DVec3 v3DirLightDIr( 0.0f , -5.0 , 5.0f );
+	v3DirLightDIr -= H3DVec3( 0.0f , 0.0f , 0.0f );
+	v3DirLightDIr.Normalize();
+	pPrePassLight->SetDirection( v3DirLightDIr );
 	pPrePassLight->SetColor( v4LightColor );
-	pPrePassLight->SetIntensity( 0.0f );
+	pPrePassLight->SetIntensity( 2.0f , 0.0f);
 	pPrePassLight->SetShadowColor( v4ShadowColor );
 	pPrePassLight->SetShadowEnable( true );
 	pPrePassLight->SetLightEnable( true ); 
 	 
-	//pPrePassLight = m_pH3DScene->CreateLight( H3DI::AFFECT_ALL , H3DI::LIGHT_POINT ); 
-	//pPrePassLight->SetDirection( v3LightDir );
-	//pPrePassLight->SetColor( v4PointLightColor );
-	//pPrePassLight->SetPosition( H3DVec3( 0.0f , 0.0f , 5.0f ) ); 
-	//pPrePassLight->SetIntensity( 3.0f , 5.0f );
-	//pPrePassLight->SetRange( 0.0f , 10.0f );
-	//pPrePassLight->SetLightEnable( true ); 
 
 	float v4SpotLightColor[]= {1.0f , 1.0f , 1.0f , 1.0f };
-	pPrePassLight = m_pH3DScene->CreateLight( H3DI::AFFECT_ALL , H3DI::LIGHT_PROJECT ); 
+	pPrePassLight = m_pH3DScene->CreateLight( H3DI::AFFECT_ACTOR_ONLY , H3DI::LIGHT_PROJECT ); 
 	pPrePassLight->SetDirection( H3DVec3( 0.0f , 0.0f , 1.0f ) );
 	pPrePassLight->SetColor( v4SpotLightColor );
 	pPrePassLight->SetPosition( H3DVec3( 0.0f , -2.0f , 30.0f ) ); 
@@ -425,35 +427,35 @@ void H3DEngineBox::_InitLights( void )
 
 	{//创建光柱
 		 
-		m_pH3DScene->CreateLightBeam(
-			H3DVec3( 0.0f , -2.0f , 5.0f ) , v3LookAt , H3DVec4( 1.0f , 1.0f , 1.0f ,1.0f ) , 1.0f );
-	 
-		m_pH3DScene->CreateLightBeam(
-			H3DVec3( -5.0f , -4.0f ,5.0f ) , v3LookAt , H3DVec4( 1.0f , 0.0f , 0.0f ,1.0f ) , 1.5f  );
+		/*m_pH3DScene->CreateLightBeam(
+		H3DVec3( 0.0f , -2.0f , 5.0f ) , v3LookAt , H3DVec4( 1.0f , 1.0f , 1.0f ,1.0f ) , 1.0f );
 
 		m_pH3DScene->CreateLightBeam(
-			H3DVec3( 5.0f , -4.0f , 5.0f ) , v3LookAt , H3DVec4( 0.0f , 0.0f , 1.0f ,1.0f ) , 0.5f );
-
-
-		m_pH3DScene->CreateLightBeam(
-			H3DVec3( 0.0f , 5.0f , 1.0f ) , H3DVec3( 0.0f , 0.0f , 0.0f ) , H3DVec4( 1.0f , 1.0f , 1.0f ,1.0f ) , 0.5f );
+		H3DVec3( -5.0f , -4.0f ,5.0f ) , v3LookAt , H3DVec4( 1.0f , 0.0f , 0.0f ,1.0f ) , 1.5f  );
 
 		m_pH3DScene->CreateLightBeam(
-			H3DVec3( -5.0f , 5.0f ,1.0f ) , H3DVec3(  5.0f , 3.0f , 0.0f )  , H3DVec4( 1.0f , 1.0f , 0.0f ,1.0f ) , 0.0f  );
-
-		m_pH3DScene->CreateLightBeam(
-			H3DVec3( 5.0f , 5.0f , 1.0f ) , H3DVec3(  -5.0f , 3.0f , 0.0f ) , H3DVec4( 0.0f , 1.0f , 1.0f ,1.0f ) , -0.5f );
-
+		H3DVec3( 5.0f , -4.0f , 5.0f ) , v3LookAt , H3DVec4( 0.0f , 0.0f , 1.0f ,1.0f ) , 0.5f );
 
 
 		m_pH3DScene->CreateLightBeam(
-			H3DVec3( 0.0f , 7.0f , 2.0f ) , H3DVec3( 0.0f , 6.0f , 3.0f ) , H3DVec4( 1.0f , 0.0f , 1.0f ,1.0f ) , 0.5f );
+		H3DVec3( 0.0f , 5.0f , 1.0f ) , H3DVec3( 0.0f , 0.0f , 0.0f ) , H3DVec4( 1.0f , 1.0f , 1.0f ,1.0f ) , 0.5f );
 
 		m_pH3DScene->CreateLightBeam(
-			H3DVec3( -5.0f , 7.0f ,2.0f ) , H3DVec3(  -5.0f , 6.0f  , 3.0f )  , H3DVec4( 0.0f , 1.0f , 0.0f ,1.0f ) , 0.0f  );
+		H3DVec3( -5.0f , 5.0f ,1.0f ) , H3DVec3(  5.0f , 3.0f , 0.0f )  , H3DVec4( 1.0f , 1.0f , 0.0f ,1.0f ) , 0.0f  );
 
 		m_pH3DScene->CreateLightBeam(
-			H3DVec3( 5.0f , 7.0f , 2.0f ) , H3DVec3(  5.0f , 6.0f  , 3.0f ) , H3DVec4( 1.0f , 1.0f , 0.0f ,1.0f ) , -0.5f );
+		H3DVec3( 5.0f , 5.0f , 1.0f ) , H3DVec3(  -5.0f , 3.0f , 0.0f ) , H3DVec4( 0.0f , 1.0f , 1.0f ,1.0f ) , -0.5f );
+
+
+
+		m_pH3DScene->CreateLightBeam(
+		H3DVec3( 0.0f , 7.0f , 2.0f ) , H3DVec3( 0.0f , 6.0f , 3.0f ) , H3DVec4( 1.0f , 0.0f , 1.0f ,1.0f ) , 0.5f );
+
+		m_pH3DScene->CreateLightBeam(
+		H3DVec3( -5.0f , 7.0f ,2.0f ) , H3DVec3(  -5.0f , 6.0f  , 3.0f )  , H3DVec4( 0.0f , 1.0f , 0.0f ,1.0f ) , 0.0f  );
+
+		m_pH3DScene->CreateLightBeam(
+		H3DVec3( 5.0f , 7.0f , 2.0f ) , H3DVec3(  5.0f , 6.0f  , 3.0f ) , H3DVec4( 1.0f , 1.0f , 0.0f ,1.0f ) , -0.5f );*/
 
 	}
 	  
@@ -467,12 +469,8 @@ void H3DEngineBox::_InitDmls( void )
 
 	//创建静态模型 
 	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_carpet001.dml"   );   
-	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_crown001.dml"  );   
-
-	H3DI::IModel* pFloor001 = 
-		m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_floor001.dml"  );    
-
-
+	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_crown001.dml"  );    
+	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_floor001.dml"  );     
 	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_floor002.dml"  ); 
 	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_outside101.dml"  ); 
 	m_pH3DScene->CreateDml("../resources/art/stage/palaceroom/model/palaceroom_outsidetree001.dml"  );  
@@ -581,32 +579,34 @@ void H3DEngineBox::_InitUI( void )
  
 void H3DEngineBox::_DrawUI( void )
 {
-	H3DMat4 oldProjMat;
-	H3DMat4 oldViewMat;
-	m_pH3DRenderer->GetPerspective( oldProjMat );
-	m_pH3DRenderer->GetViewMatrix( oldViewMat );
+	//H3DMat4 oldProjMat;
+	//H3DMat4 oldViewMat;
+	//m_pH3DRenderer->GetPerspective( oldProjMat );
+	//m_pH3DRenderer->GetViewMatrix( oldViewMat );
 
-	H3DMat4 orthoMat;
-	H3DMat4 newViewMat;
+	//H3DMat4 orthoMat;
+	//H3DMat4 newViewMat;
 
-	newViewMat.Identity();
-	m_pH3DRenderer->GetOrthoProjectionMatrix( 
-		0.0f , static_cast<float>( m_iWidth ) , 
-		static_cast<float>( m_iHeight ) , 0.0f , 
-		-1.0f , 1.0f , orthoMat ); 
+	//newViewMat.Identity();
+	//m_pH3DRenderer->GetOrthoProjectionMatrix( 
+	//	0.0f , static_cast<float>( m_iWidth ) , 
+	//	static_cast<float>( m_iHeight ) , 0.0f , 
+	//	-1.0f , 1.0f , orthoMat ); 
 
-	m_pH3DRenderer->SetPerspective( orthoMat );
-	m_pH3DRenderer->SetViewMatrix( newViewMat );  
+	//m_pH3DRenderer->SetPerspective( orthoMat );
+	//m_pH3DRenderer->SetViewMatrix( newViewMat );  
 
-	if( m_pUIShader )
-	{   
-		_PrepareUI(); 
-		m_pH3DRenderer->SetNewShader( m_pUIShader );
-		m_pH3DRenderer->DrawIndexNew( H3DI::TRIANGLE_LIST , 6 , 4 , 0 , 24 , 12 , 24 );     
-	}
-	 
-	m_pH3DRenderer->SetPerspective( oldProjMat );
-	m_pH3DRenderer->SetViewMatrix( oldViewMat ); 
+	//if( m_pUIShader )
+	//{   
+	//	_PrepareUI(); 
+	//	m_pH3DRenderer->SetNewShader( m_pUIShader );
+	//	m_pH3DRenderer->DrawIndexNew( H3DI::TRIANGLE_LIST , 6 , 4 , 0 , 24 , 12 , 24 );     
+	//}
+	// 
+	//m_pH3DRenderer->SetPerspective( oldProjMat );
+	//m_pH3DRenderer->SetViewMatrix( oldViewMat ); 
+
+	/*m_pH3DRenderer->PrintTextToScreen( "Hello Wolrd" , 300 , 300 , 255 , 0 , 0 );*/
 }
 
  
@@ -643,7 +643,7 @@ void H3DEngineBox::_PrepareUI( void )
 			pVertex[i++] = color[3*iVert];
 			pVertex[i++] = color[3*iVert+1];
 			pVertex[i++] = color[3*iVert+2];  
-		 
+
 			pVertex[i++]= 1.0f; 
 			pVertex[i++] = uv[2*iVert]; 
 			pVertex[i++] = uv[2*iVert+1]; 

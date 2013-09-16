@@ -394,6 +394,15 @@ namespace ZPH3D
 			pAnimCh->SetAction( actionSelector.GetCurrAction(false).c_str() , false );     
 			itActor++;
 		}
+
+		PetList_t::iterator itPet = m_pets.begin();
+		while( itPet != m_pets.end() )
+		{
+			H3DI::IAnimationChannel* pAnimCh = 
+				(*itPet)->GetAnmChannel( 0 ); 
+			pAnimCh->SetAction( actionSelector.GetCurrAction(false).c_str() , false );     
+			itPet++;
+		}
 	}
 
 
