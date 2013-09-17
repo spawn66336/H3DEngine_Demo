@@ -47,6 +47,7 @@ BEGIN_MESSAGE_MAP(CH3DEngine_DemoView, CView)
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()
 	ON_WM_CHAR()
+	ON_WM_SHOWWINDOW()
 END_MESSAGE_MAP()
 
 // CH3DEngine_DemoView 构造/析构
@@ -66,7 +67,7 @@ BOOL CH3DEngine_DemoView::PreCreateWindow(CREATESTRUCT& cs)
 {
 	// TODO: 在此处通过修改
 	//  CREATESTRUCT cs 来修改窗口类或样式
-
+	
 	return CView::PreCreateWindow(cs);
 }
 
@@ -151,6 +152,8 @@ int CH3DEngine_DemoView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_pH3DBox = new ZPH3D::H3DEngineBox;
 	ZP_ASSERT( NULL != m_pH3DBox );
 	m_pH3DBox->Init( this->GetSafeHwnd() ); 
+
+	ShowWindow( SW_MAXIMIZE );
 	return 0;
 }
 
@@ -217,7 +220,7 @@ void CH3DEngine_DemoView::OnMouseMove(UINT nFlags, CPoint point)
 
 void CH3DEngine_DemoView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 { 
-	if( nChar == 'C' || nChar == 'c' )
+	if( nChar == 'Z' || nChar == 'z' )
 	{
 		m_pH3DBox->RandomActorDresses();
 	}
@@ -228,4 +231,10 @@ void CH3DEngine_DemoView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 
 	CView::OnChar(nChar, nRepCnt, nFlags);
+}
+
+
+void CH3DEngine_DemoView::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+	CView::OnShowWindow(bShow, nStatus);
 }

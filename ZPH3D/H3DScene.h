@@ -28,8 +28,7 @@ namespace ZPH3D
 		H3DLightBeamControl& operator=( const H3DLightBeamControl& rhs );
 
 	protected:
-		 
-
+		  
 		void _Apply( void );
 
 		H3DLightBeamControl();

@@ -66,6 +66,9 @@ protected:
 
 	BOOL CreateDockingWindows();
 	void SetDockingWindowIcons(BOOL bHiColorIcons);
+public:
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	virtual void ActivateFrame(int nCmdShow = -1);
 };
 
 
